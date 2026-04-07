@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(..., env="REDIS_URL")
 
     PROJECT_NAME: str = "LoomBo - API"
+    ENVIRONMENT: str = Field(..., env="ENVIRONMENT")
 
     LANGUAGE_CODE: str = "es"
     TIME_ZONE: str = "America/La_Paz"
