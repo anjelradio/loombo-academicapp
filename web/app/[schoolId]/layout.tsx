@@ -8,7 +8,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { getSchoolsByUser } from "@/lib/api/school-api";
+import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 import { redirect } from "next/navigation";
 export default async function ViewsLayout({
   children,
@@ -18,7 +18,12 @@ export default async function ViewsLayout({
   params: { schoolId: string };
 }) {
   const { schoolId } = await params;
-  const schools = await getSchoolsByUser();
+  const response = await schoolRepository.getSchoolsByUser();
+  if (!response.ok || !("data" in response) || !response.data) {
+    redirect("/");
+  }
+
+  const schools = response.data;
   const school = schools.find((school) => school.id === schoolId);
   if (!school) redirect("/");
   return (

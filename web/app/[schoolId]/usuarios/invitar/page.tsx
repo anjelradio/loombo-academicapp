@@ -1,6 +1,6 @@
-import InviteGenerateCards from "@/components/invitar/InviteGenerateCards";
+import InviteGenerateCards from "@/features/school/presentation/components/invite/InviteGenerateCards";
 import PageHeading from "@/components/shared/PageHeading";
-import { getSchoolInvites } from "@/lib/api/invite-api";
+import { inviteRepository } from "@/features/school/data/repositories/invite.repository";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import InviteCodesTable from "@/components/invitar/InviteCodesTable";
+import InviteCodesTable from "@/features/school/presentation/components/invite/InviteCodesTable";
 
 export default async function InviteUsersPage({
   params,
@@ -19,7 +19,8 @@ export default async function InviteUsersPage({
   params: Promise<{ schoolId: string }>;
 }) {
   const { schoolId } = await params;
-  const invites = await getSchoolInvites(schoolId);
+  const response = await inviteRepository.getSchoolInvites(schoolId);
+  const invites = response.ok && "data" in response && response.data ? response.data : [];
 
   return (
     <>

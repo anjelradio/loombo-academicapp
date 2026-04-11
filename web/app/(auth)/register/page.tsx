@@ -1,6 +1,6 @@
-import HeroSection from "@/components/auth/HeroSection";
-import RegisterForm from "@/components/auth/RegisterForm";
-import RegisterSection from "@/components/auth/RegisterSection";
+import HeroSection from "@/features/auth/presentation/components/auth/HeroSection";
+import RegisterForm from "@/features/auth/presentation/components/auth/RegisterForm";
+import RegisterSection from "@/features/auth/presentation/components/auth/RegisterSection";
 
 export default function RegisterPage() {
   return (

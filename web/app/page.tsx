@@ -1,5 +1,5 @@
 import { getToken } from "@/lib/api/get-token";
-import { getSchoolsByUser } from "@/lib/api/school-api";
+import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -8,7 +8,12 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const schools = await getSchoolsByUser();
+  const response = await schoolRepository.getSchoolsByUser();
+  if (!response.ok || !("data" in response) || !response.data) {
+    redirect("/inicio");
+  }
+
+  const schools = response.data;
 
   if (schools.length === 0) {
     redirect("/inicio");

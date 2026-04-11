@@ -1,7 +1,7 @@
-import BackToPreviousButton from "@/components/profile/BackToPreviousButton";
-import UserEmailCard from "@/components/profile/UserEmailCard";
-import UserInfoCard from "@/components/profile/UserInfoCard";
-import UserPasswordCard from "@/components/profile/UserPasswordCard";
+import BackToPreviousButton from "@/features/auth/presentation/components/account/BackToPreviousButton";
+import UserEmailCard from "@/features/auth/presentation/components/account/UserEmailCard";
+import UserInfoCard from "@/features/auth/presentation/components/account/UserInfoCard";
+import UserPasswordCard from "@/features/auth/presentation/components/account/UserPasswordCard";
 
 export default function UserProfilePage() {
   return (

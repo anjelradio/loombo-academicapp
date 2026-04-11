@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAppStore } from "@/lib/store/appStore";
 import { useRouter } from "next/navigation";
-import { logout } from "@/actions/auth-actions/logout-user-action";
+import { logout } from "@/features/auth/presentation/actions/auth/logout-user-action";
 import {
   ChevronsUpDownIcon,
   SparklesIcon,

@@ -1,43 +1,8 @@
-import { z } from "zod";
-
-export const SchoolRoleEnum = z.enum(["owner", "teacher", "admin"]);
-export const SchoolTypeEnum = z.enum(["public", "private", "charter"]);
-
-const schoolNameRegex = /^[A-Za-z0-9À-ÖØ-öø-ÿÑñ .'-]+$/;
-
-export const SchoolSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  logo_image: z.string().nullable(),
-  type: SchoolTypeEnum,
-  phone: z.string(),
-  role: SchoolRoleEnum.optional(),
-});
-
-export const SchoolListSchema = z.array(SchoolSchema);
-
-export const SchoolCreateSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(5, "El nombre de la escuela debe tener al menos 5 caracteres")
-    .max(70, "El nombre de la escuela no puede superar los 70 caracteres")
-    .regex(schoolNameRegex, "El nombre contiene caracteres no permitidos"),
-  type: SchoolTypeEnum,
-  phone: z
-    .string()
-    .trim()
-    .refine(
-      (value) => /^\+?[0-9\s\-()]{8,20}$/.test(value),
-      "El telefono es invalido"
-    ),
-});
-
-export const SchoolJoinByCodeSchema = z.object({
-  code: z
-    .string()
-    .trim()
-    .toUpperCase()
-    .length(6, "El codigo debe tener 6 caracteres")
-    .regex(/^[A-Z0-9]+$/, "El codigo solo permite letras y numeros"),
-});
+export {
+  SchoolCreateSchema,
+  SchoolJoinByCodeSchema,
+  SchoolListSchema,
+  SchoolRoleEnum,
+  SchoolSchema,
+  SchoolTypeEnum,
+} from "@/features/school/data/schemas/school.schema";

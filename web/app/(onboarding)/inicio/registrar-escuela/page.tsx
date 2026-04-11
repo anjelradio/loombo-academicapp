@@ -1,4 +1,4 @@
-import RegisterSchoolForm from "@/components/inicio/RegisterSchoolForm";
+import RegisterSchoolForm from "@/features/school/presentation/components/school/RegisterSchoolForm";
 import {
   Card,
   CardContent,

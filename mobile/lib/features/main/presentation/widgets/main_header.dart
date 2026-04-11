@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/features/shared/widgets/custom_filled_button.dart';
 
 class MainHeader extends StatelessWidget {
@@ -22,7 +23,10 @@ class MainHeader extends StatelessWidget {
         const Spacer(),
         _CircleIconButton(icon: Icons.notifications, onPressed: () {}),
         const SizedBox(width: 8),
-        _CircleIconButton(icon: Icons.person, onPressed: () {}),
+        _CircleIconButton(
+          icon: Icons.person,
+          onPressed: () => context.push('/profile/personal-data'),
+        ),
       ],
     );
   }

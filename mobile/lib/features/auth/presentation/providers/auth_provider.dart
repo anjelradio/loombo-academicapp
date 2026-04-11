@@ -44,7 +44,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = await authRepository.login(email, password);
       _setLoggedUser(user);
     } on CustomError catch (e) {
-      logout(e.message);
+      logoutWithErrors(e.messages);
     } catch (e) {
       logout('Error al iniciar sesion');
     }
@@ -67,9 +67,129 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       _setLoggedUser(user);
     } on CustomError catch (e) {
-      logout(e.message);
+      logoutWithErrors(e.messages);
     } catch (e) {
       logout('Error al registrarse');
+    }
+  }
+
+  Future<bool> updatePersonalInfo(String firstName, String lastName) async {
+    final currentUser = state.user;
+    if (currentUser == null) return false;
+
+    state = state.copyWith(errorMessages: const []);
+
+    try {
+      final updatedUser = await authRepository.updatePersonalInfo(
+        currentUser.token,
+        firstName,
+        lastName,
+      );
+
+      state = state.copyWith(user: updatedUser, errorMessages: const []);
+      return true;
+    } on CustomError catch (e) {
+      state = state.copyWith(errorMessages: e.messages);
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessages: const ['Error al actualizar datos personales'],
+      );
+      return false;
+    }
+  }
+
+  Future<bool> requestEmailOtp() async {
+    final currentUser = state.user;
+    if (currentUser == null) return false;
+
+    state = state.copyWith(errorMessages: const []);
+
+    try {
+      await authRepository.requestEmailOtp(currentUser.token);
+      return true;
+    } on CustomError catch (e) {
+      state = state.copyWith(errorMessages: e.messages);
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessages: const ['Error al enviar el codigo OTP'],
+      );
+      return false;
+    }
+  }
+
+  Future<String?> verifyEmailOtp(String otp) async {
+    final currentUser = state.user;
+    if (currentUser == null) return null;
+
+    state = state.copyWith(errorMessages: const []);
+
+    try {
+      return await authRepository.verifyEmailOtp(currentUser.token, otp);
+    } on CustomError catch (e) {
+      state = state.copyWith(errorMessages: e.messages);
+      return null;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessages: const ['Error al verificar el codigo OTP'],
+      );
+      return null;
+    }
+  }
+
+  Future<bool> updateEmail(String newEmail, String emailChangeToken) async {
+    final currentUser = state.user;
+    if (currentUser == null) return false;
+
+    state = state.copyWith(errorMessages: const []);
+
+    try {
+      final updatedUser = await authRepository.updateEmail(
+        currentUser.token,
+        newEmail,
+        emailChangeToken,
+      );
+      state = state.copyWith(user: updatedUser, errorMessages: const []);
+      return true;
+    } on CustomError catch (e) {
+      state = state.copyWith(errorMessages: e.messages);
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessages: const ['Error al actualizar el correo'],
+      );
+      return false;
+    }
+  }
+
+  Future<bool> updatePassword(
+    String currentPassword,
+    String newPassword,
+    String confirmNewPassword,
+  ) async {
+    final currentUser = state.user;
+    if (currentUser == null) return false;
+
+    state = state.copyWith(errorMessages: const []);
+
+    try {
+      await authRepository.updatePassword(
+        currentUser.token,
+        currentPassword,
+        newPassword,
+        confirmNewPassword,
+      );
+      state = state.copyWith(errorMessages: const []);
+      return true;
+    } on CustomError catch (e) {
+      state = state.copyWith(errorMessages: e.messages);
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessages: const ['Error al actualizar la contraseña'],
+      );
+      return false;
     }
   }
 
@@ -88,7 +208,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void _setLoggedUser(User user) async {
     await keyValueStorageService.setKeyValue('token', user.token);
-    state = state.copyWith(user: user, authStatus: AuthStatus.authenticated);
+    state = state.copyWith(
+      user: user,
+      authStatus: AuthStatus.authenticated,
+      errorMessages: const [],
+    );
+  }
+
+  Future<void> logoutWithErrors(List<String> errorMessages) async {
+    await keyValueStorageService.removeKey('token');
+    state = state.copyWith(
+      authStatus: AuthStatus.notAuthenticated,
+      user: null,
+      errorMessages: errorMessages,
+    );
   }
 
   Future<void> logout([String? errorMessage]) async {
@@ -97,7 +230,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       authStatus: AuthStatus.notAuthenticated,
 
       user: null,
-      errorMessage: errorMessage,
+      errorMessages: errorMessage == null ? const [] : [errorMessage],
     );
   }
 }
@@ -109,20 +242,24 @@ enum AuthStatus { checking, authenticated, notAuthenticated }
 class AuthState {
   final AuthStatus authStatus;
   final User? user;
-  final String errorMessage;
+  final List<String> errorMessages;
+
+  String get errorMessage =>
+      errorMessages.isNotEmpty ? errorMessages.first : '';
+
   AuthState({
     this.authStatus = AuthStatus.checking,
     this.user,
-    this.errorMessage = '',
+    this.errorMessages = const [],
   });
 
   AuthState copyWith({
     AuthStatus? authStatus,
     User? user,
-    String? errorMessage,
+    List<String>? errorMessages,
   }) => AuthState(
     authStatus: authStatus ?? this.authStatus,
     user: user ?? this.user,
-    errorMessage: errorMessage ?? this.errorMessage,
+    errorMessages: errorMessages ?? this.errorMessages,
   );
 }

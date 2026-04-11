@@ -29,6 +29,7 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - assets/images/bg/
     - assets/images/app_introduction/
     - assets/images/logo/
     - assets/images/headers/

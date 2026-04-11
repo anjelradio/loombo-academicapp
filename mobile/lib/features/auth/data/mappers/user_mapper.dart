@@ -1,8 +1,14 @@
 import 'package:mobile/features/auth/domain/domain.dart';
 
 class UserMapper {
+  static Map<String, dynamic> _resolveUserJson(Map<String, dynamic> json) {
+    final userData = json['user'];
+    if (userData is Map<String, dynamic>) return userData;
+    return json;
+  }
+
   static User userJsonToEntity(Map<String, dynamic> json) {
-    final userJson = json['user'];
+    final userJson = _resolveUserJson(json);
 
     return User(
       id: userJson['id'],
@@ -10,6 +16,21 @@ class UserMapper {
       lastName: userJson['last_name'],
       email: userJson['email'],
       token: json['access_token'],
+    );
+  }
+
+  static User userJsonWithoutTokenToEntity(
+    Map<String, dynamic> json, {
+    required String token,
+  }) {
+    final userJson = _resolveUserJson(json);
+
+    return User(
+      id: userJson['id'],
+      firstName: userJson['first_name'],
+      lastName: userJson['last_name'],
+      email: userJson['email'],
+      token: token,
     );
   }
 }

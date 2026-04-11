@@ -31,7 +31,7 @@ import {
   School2,
 } from "lucide-react";
 import { SchoolSwitcher } from "./school-switcher";
-import { getSchoolsByUser } from "@/lib/api/school-api";
+import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 
 const data = {
   navSecondary: [
@@ -83,7 +83,8 @@ const data = {
 };
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const schools = await getSchoolsByUser()
+  const response = await schoolRepository.getSchoolsByUser();
+  const schools = response.ok && "data" in response && response.data ? response.data : [];
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

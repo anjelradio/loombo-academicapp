@@ -1,22 +1,13 @@
 "use server";
 
-import { env } from "@/lib/config/env";
-import { SchoolListSchema } from "../schemas/school.schema";
-import { getToken } from "./get-token";
+import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 
-const baseUrl = `${env.API_URL}/school`;
 export async function getSchoolsByUser() {
-  const token = await getToken();
+  const response = await schoolRepository.getSchoolsByUser();
 
-  const res = await fetch(`${baseUrl}/by_user`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+  if (!response.ok || !("data" in response) || !response.data) {
+    throw new Error(response.errors?.[0] ?? "No fue posible obtener las escuelas");
+  }
 
-  const data = await res.json();
-  return SchoolListSchema.parse(data);
+  return response.data;
 }

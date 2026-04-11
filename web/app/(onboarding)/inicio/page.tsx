@@ -1,4 +1,4 @@
-import JoinSchoolCodeDialog from "@/components/inicio/JoinSchoolCodeDialog";
+import JoinSchoolCodeDialog from "@/features/school/presentation/components/school/JoinSchoolCodeDialog";
 import Image from "next/image";
 import Link from "next/link";
 

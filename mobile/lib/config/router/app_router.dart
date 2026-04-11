@@ -4,6 +4,7 @@ import 'package:mobile/config/router/app_router_notifier.dart';
 import 'package:mobile/features/auth/auth.dart';
 import 'package:mobile/features/introduction/tutorial.dart';
 import 'package:mobile/features/main/main.dart';
+import 'package:mobile/features/profile/profile.dart';
 
 final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
@@ -31,6 +32,10 @@ final goRouterProvider = Provider((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/profile/personal-data',
+        builder: (context, state) => const PersonalDataScreen(),
       ),
     ],
     redirect: (context, state) {

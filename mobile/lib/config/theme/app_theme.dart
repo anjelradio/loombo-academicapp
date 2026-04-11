@@ -8,7 +8,7 @@ class AppTheme {
   ThemeData getTheme() => ThemeData(
     ///* General
     useMaterial3: true,
-    colorSchemeSeed: colorSeed,
+    colorSchemeSeed: const Color.fromARGB(255, 3, 28, 88),
 
     ///* Texts
     textTheme: TextTheme(
@@ -22,6 +22,7 @@ class AppTheme {
       ),
       titleSmall: GoogleFonts.montserratAlternates().copyWith(fontSize: 20),
       bodyMedium: GoogleFonts.montserratAlternates().copyWith(fontSize: 18),
+      bodySmall: GoogleFonts.montserratAlternates().copyWith(fontSize: 15),
     ),
 
     ///* Scaffold Background Color

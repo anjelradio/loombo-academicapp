@@ -5,7 +5,12 @@ class InvalidToken implements Exception {}
 class ConnectionTimeOut {}
 
 class CustomError implements Exception {
-  final String message;
+  final List<String> messages;
 
-  CustomError(this.message);
+  String get message => messages.first;
+
+  CustomError(String message) : messages = [message];
+
+  CustomError.multiple(List<String> messages)
+    : messages = messages.isEmpty ? ['Error desconocido'] : messages;
 }

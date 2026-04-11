@@ -1,6 +1,6 @@
-import HeroSection from "@/components/auth/HeroSection";
-import LoginForm from "@/components/auth/LoginForm";
-import LoginSection from "@/components/auth/LoginSection";
+import HeroSection from "@/features/auth/presentation/components/auth/HeroSection";
+import LoginForm from "@/features/auth/presentation/components/auth/LoginForm";
+import LoginSection from "@/features/auth/presentation/components/auth/LoginSection";
 
 export default function LoginPage() {
   return (

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
+import 'custom_filled_button.dart';
+
 class CustomTextFormField extends StatelessWidget {
   final String? label;
   final String? hint;
+  final String? initialValue;
   final String? errorMessage;
   final bool obscureText;
+  final bool readOnly;
   final TextInputType? keyboardType;
   final Function(String)? onChanged;
+  final Function(String)? onFieldSubmitted;
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
@@ -15,10 +20,13 @@ class CustomTextFormField extends StatelessWidget {
     super.key,
     this.label,
     this.hint,
+    this.initialValue,
     this.errorMessage,
     this.obscureText = false,
+    this.readOnly = false,
     this.keyboardType = TextInputType.text,
     this.onChanged,
+    this.onFieldSubmitted,
     this.validator,
     this.suffixIcon,
     this.prefixIcon,
@@ -26,23 +34,17 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    const accentColor = CustomFilledButton.defaultButtonColor;
 
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(
-        color: Color(0xFFE5E7EB),
-        width: 1,
-      ),
+      borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
     );
 
     final focusedBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(
-        color: colors.primary,
-        width: 1.4,
-      ),
+      borderSide: BorderSide(color: accentColor, width: 1.4),
     );
 
     return Container(
@@ -57,15 +59,19 @@ class CustomTextFormField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        initialValue: initialValue,
         onChanged: onChanged,
         validator: validator,
+        onFieldSubmitted: onFieldSubmitted,
         obscureText: obscureText,
+        readOnly: readOnly,
         keyboardType: keyboardType,
         style: textTheme.bodyMedium?.copyWith(
           color: const Color(0xFF111827),
           fontSize: 15,
           fontWeight: FontWeight.w500,
         ),
+        cursorColor: accentColor,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
@@ -87,7 +93,7 @@ class CustomTextFormField extends StatelessWidget {
           ),
 
           floatingLabelStyle: textTheme.bodyMedium?.copyWith(
-            color: colors.primary,
+            color: accentColor,
             fontWeight: FontWeight.w700,
           ),
 
@@ -100,17 +106,11 @@ class CustomTextFormField extends StatelessWidget {
           focusedBorder: focusedBorder,
 
           errorBorder: border.copyWith(
-            borderSide: const BorderSide(
-              color: Color(0xFFEF4444),
-              width: 1.2,
-            ),
+            borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.2),
           ),
 
           focusedErrorBorder: focusedBorder.copyWith(
-            borderSide: const BorderSide(
-              color: Color(0xFFEF4444),
-              width: 1.4,
-            ),
+            borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.4),
           ),
         ),
       ),
