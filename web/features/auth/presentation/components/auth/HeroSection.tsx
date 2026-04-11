@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type HeroSectionProps = {
   urlImage: string;
   title: string;
@@ -17,8 +19,9 @@ export default function HeroSection({
       <img src={urlImage} alt="Background" className="w-full h-full object-cover" />
 
       <div className="absolute inset-0 bg-[#0A1F3D]/90 flex flex-col justify-between p-8 md:p-16">
-        <div>
-          <h1 className="text-white text-2xl md:text-4xl font-bold">AppAcademica</h1>
+        <div className="flex items-center gap-3">
+          <Image src="/logos/loombo-white.png" alt="LoomBo logo" width={55} height={55} priority />
+          <h1 className="text-white text-3xl md:text-5xl font-bold">LoomBo</h1>
         </div>
 
         <div className="max-w-2xl pb-4 md:pb-0">

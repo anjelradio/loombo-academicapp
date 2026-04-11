@@ -1,13 +1,3 @@
-import { z } from "zod";
-import { AuthUserSchema } from "../schemas/auth.schema";
-import { InviteSchema } from "../schemas/invite.schema";
-import { SchoolSchema } from "../schemas/school.schema";
-
-// AuthTypes
-export type AuthUser = z.infer<typeof AuthUserSchema>;
-
-// SchoolTypes
-export type School = z.infer<typeof SchoolSchema>;
-
-// InviteTypes
-export type Invite = z.infer<typeof InviteSchema>;
+export type { AuthUser } from "@/features/auth/domain/entities/auth-user";
+export type { Invite } from "@/features/school/domain/entities/invite";
+export type { School } from "@/features/school/domain/entities/school";

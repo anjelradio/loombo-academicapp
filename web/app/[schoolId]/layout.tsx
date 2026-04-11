@@ -15,7 +15,7 @@ export default async function ViewsLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { schoolId: string };
+  params: Promise<{ schoolId: string }>;
 }) {
   const { schoolId } = await params;
   const response = await schoolRepository.getSchoolsByUser();
