@@ -1,9 +1,11 @@
 import { getToken } from "@/lib/api/get-token";
 import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function Home() {
-  const token = await getToken();
+  const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
   if (!token) {
     redirect("/login");
   }
