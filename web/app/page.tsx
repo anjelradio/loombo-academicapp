@@ -20,6 +20,7 @@ export default async function Home() {
   }
 
   // MVP: primer colegio
-  
+
   redirect(`/${schools[0].id}/inicio`);
+  return <h1>HOME</h1>;
 }
