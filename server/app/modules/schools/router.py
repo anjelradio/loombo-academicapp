@@ -8,7 +8,9 @@ from app.modules.schools.schemas import (
     SchoolInviteCreate,
     SchoolInviteRead,
     SchoolJoinByCode,
+    SchoolMemberRead,
     SchoolRead,
+    SchoolUsersFilterRole,
     SchoolWithRole,
 )
 from app.modules.schools.services import SchoolInviteService, SchoolService
@@ -29,6 +31,31 @@ def create_school(db: DBSession, payload: SchoolCreate, user: CurrentUser):
 @router.get("/by_user", response_model=list[SchoolWithRole])
 def list_school_by_user(db: DBSession, user: CurrentUser):
     return SchoolService(db).list_by_user(user.id)
+
+
+@router.get("/{school_id}/users", response_model=list[SchoolMemberRead])
+def list_users_by_school(
+    school_id: UUID,
+    db: DBSession,
+    user: CurrentUser,
+    role: SchoolUsersFilterRole | None = None,
+):
+    return SchoolService(db).list_users_by_school(school_id, user.id, role)
+
+
+@router.delete("/{school_id}/users/{target_user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_from_school(
+    school_id: UUID, target_user_id: UUID, db: DBSession, user: CurrentUser
+):
+    SchoolService(db).delete_user_from_school(school_id, user.id, target_user_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch("/{school_id}/users/{target_user_id}/role", response_model=SchoolMemberRead)
+def toggle_user_role_in_school(
+    school_id: UUID, target_user_id: UUID, db: DBSession, user: CurrentUser
+):
+    return SchoolService(db).toggle_user_role_in_school(school_id, user.id, target_user_id)
 
 
 @router.post("/{school_id}/invite", response_model=SchoolInviteRead)

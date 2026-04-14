@@ -6,7 +6,13 @@ from sqlmodel import Session
 
 from app.modules.schools.models import School, SchoolRole, SchoolUser
 from app.modules.schools.repositories import SchoolRepository, SchoolUserRepository
-from app.modules.schools.schemas import SchoolCreate, SchoolWithRole
+from app.modules.schools.schemas import (
+    SchoolCreate,
+    SchoolMemberRead,
+    SchoolUsersFilterRole,
+    SchoolWithRole,
+)
+from app.modules.users.model import User
 
 
 class SchoolService:
@@ -17,6 +23,20 @@ class SchoolService:
 
     def list(self) -> list[School]:
         return self.school.list()
+
+    def _ensure_owner(self, school_id: UUID, user_id: UUID) -> None:
+        membership = self.school_user.get_by_user_and_school(user_id, school_id)
+        if not membership:
+            raise HTTPException(status_code=403, detail="No perteneces a esta escuela")
+
+        owner_membership = self.school_user.get_by_user_school_and_role(
+            user_id, school_id, SchoolRole.OWNER
+        )
+        if not owner_membership:
+            raise HTTPException(
+                status_code=403,
+                detail="Solo el owner puede gestionar usuarios de la escuela",
+            )
 
     def create(self, payload: SchoolCreate, owner_id: UUID) -> School:
         if self.school.get_by_name(payload.name):
@@ -71,3 +91,93 @@ class SchoolService:
             )
             for school, role in results
         ]
+
+    def list_users_by_school(
+        self, school_id: UUID, user_id: UUID, role: SchoolUsersFilterRole | None = None
+    ) -> list[SchoolMemberRead]:
+        school = self.school.get(school_id)
+        if not school:
+            raise HTTPException(status_code=404, detail="Escuela no encontrada")
+
+        self._ensure_owner(school_id, user_id)
+
+        target_role = None
+        if role == SchoolUsersFilterRole.ADMIN:
+            target_role = SchoolRole.ADMIN
+        elif role == SchoolUsersFilterRole.TEACHER:
+            target_role = SchoolRole.TEACHER
+
+        rows = self.school_user.list_users_by_school_and_role(school_id, target_role)
+        return [
+            SchoolMemberRead(
+                id=user.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
+                role=member_role,
+                created_date=created_date,
+            )
+            for user, member_role, created_date in rows
+        ]
+
+    def delete_user_from_school(
+        self, school_id: UUID, user_id: UUID, target_user_id: UUID
+    ) -> None:
+        school = self.school.get(school_id)
+        if not school:
+            raise HTTPException(status_code=404, detail="Escuela no encontrada")
+
+        self._ensure_owner(school_id, user_id)
+
+        target_memberships = self.school_user.list_non_owner_by_user_and_school(
+            target_user_id, school_id
+        )
+        if not target_memberships:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado en la escuela")
+
+        for membership in target_memberships:
+            self.school_user.delete(membership)
+
+        self.db.commit()
+
+    def toggle_user_role_in_school(
+        self, school_id: UUID, user_id: UUID, target_user_id: UUID
+    ) -> SchoolMemberRead:
+        school = self.school.get(school_id)
+        if not school:
+            raise HTTPException(status_code=404, detail="Escuela no encontrada")
+
+        self._ensure_owner(school_id, user_id)
+
+        target_memberships = self.school_user.list_manageable_roles_by_user_and_school(
+            target_user_id, school_id
+        )
+        if not target_memberships:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado en la escuela")
+
+        if len(target_memberships) > 1:
+            raise HTTPException(
+                status_code=409,
+                detail="El usuario tiene multiples roles activos y no se puede alternar automaticamente",
+            )
+
+        membership = target_memberships[0]
+        membership.role = (
+            SchoolRole.TEACHER if membership.role == SchoolRole.ADMIN else SchoolRole.ADMIN
+        )
+        self.school_user.update(membership)
+        self.db.commit()
+        self.db.refresh(membership)
+
+        target_user = self.db.get(User, target_user_id)
+        if not target_user or not target_user.state:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+        return SchoolMemberRead(
+            id=target_user.id,
+            first_name=target_user.first_name,
+            last_name=target_user.last_name,
+            email=target_user.email,
+            role=membership.role,
+            created_date=membership.created_date,
+        )

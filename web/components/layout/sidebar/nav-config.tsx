@@ -20,8 +20,8 @@ export const navigationByRole = {
       icon: <Users />,
       isActive: true,
       items: [
-        { title: "Administradores", url: "#" },
-        { title: "Profesores", url: "#" },
+        { title: "Administradores", url: "usuarios/administradores" },
+        { title: "Profesores", url: "usuarios/profesores" },
         { title: "Invitaciones", url: "usuarios/invitar" },
       ],
     },

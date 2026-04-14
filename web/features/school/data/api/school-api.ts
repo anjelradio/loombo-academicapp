@@ -8,6 +8,11 @@ import {
   SchoolListSchema,
   SchoolSchema,
 } from "../schemas/school.schema";
+import {
+  SchoolMemberFilterRoleEnum,
+  SchoolMemberSchema,
+  SchoolMemberListSchema,
+} from "../schemas/school-member.schema";
 
 const baseUrl = `${env.API_URL}/school`;
 
@@ -114,6 +119,103 @@ export const schoolApi = {
       }
 
       const parsed = SchoolSchema.safeParse(responseData);
+      if (!parsed.success) {
+        return { ok: false, errors: ["Error en la respuesta del servidor"] };
+      }
+
+      return { ok: true, data: parsed.data };
+    } catch {
+      return { ok: false, errors: ["Error de conexion o del servidor"] };
+    }
+  },
+
+  async getUsersBySchool(schoolId: string, role?: "admin" | "teacher") {
+    const token = await getToken();
+    if (!token) {
+      return { ok: false, errors: ["No autorizado"] };
+    }
+
+    if (role) {
+      const roleResult = SchoolMemberFilterRoleEnum.safeParse(role);
+      if (!roleResult.success) {
+        return { ok: false, errors: ["Rol de filtro invalido"] };
+      }
+    }
+
+    try {
+      const query = role ? `?role=${role}` : "";
+      const res = await fetch(`${baseUrl}/${schoolId}/users${query}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      const responseData = await res.json();
+      if (!res.ok) {
+        return { ok: false, errors: parseError(responseData) };
+      }
+
+      const parsed = SchoolMemberListSchema.safeParse(responseData);
+      if (!parsed.success) {
+        return { ok: false, errors: ["Error en la respuesta del servidor"] };
+      }
+
+      return { ok: true, data: parsed.data };
+    } catch {
+      return { ok: false, errors: ["Error de conexion o del servidor"] };
+    }
+  },
+
+  async deleteUserFromSchool(schoolId: string, targetUserId: string) {
+    const token = await getToken();
+    if (!token) {
+      return { ok: false, errors: ["No autorizado"] };
+    }
+
+    try {
+      const res = await fetch(`${baseUrl}/${schoolId}/users/${targetUserId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const responseData = await res.json();
+        return { ok: false, errors: parseError(responseData) };
+      }
+
+      return { ok: true };
+    } catch {
+      return { ok: false, errors: ["Error de conexion o del servidor"] };
+    }
+  },
+
+  async toggleUserRoleInSchool(schoolId: string, targetUserId: string) {
+    const token = await getToken();
+    if (!token) {
+      return { ok: false, errors: ["No autorizado"] };
+    }
+
+    try {
+      const res = await fetch(`${baseUrl}/${schoolId}/users/${targetUserId}/role`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const responseData = await res.json();
+      if (!res.ok) {
+        return { ok: false, errors: parseError(responseData) };
+      }
+
+      const parsed = SchoolMemberSchema.safeParse(responseData);
       if (!parsed.success) {
         return { ok: false, errors: ["Error en la respuesta del servidor"] };
       }

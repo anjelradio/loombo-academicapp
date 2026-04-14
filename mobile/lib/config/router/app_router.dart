@@ -37,6 +37,10 @@ final goRouterProvider = Provider((ref) {
         path: '/profile/personal-data',
         builder: (context, state) => const PersonalDataScreen(),
       ),
+      GoRoute(
+        path: '/join/school-code',
+        builder: (context, state) => const JoinSchoolCodeScreen(),
+      ),
     ],
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;

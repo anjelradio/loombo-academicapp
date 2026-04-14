@@ -36,7 +36,7 @@ import { schoolRepository } from "@/features/school/data/repositories/school.rep
 const data = {
   navSecondary: [
     {
-      title: "Support",
+      title: "Soporte",
       url: "#",
       icon: <LifeBuoyIcon />,
     },
@@ -53,33 +53,17 @@ const data = {
       icon: <FrameIcon />,
     },
     {
-      name: "Sales & Marketing",
+      name: "Proximamente",
       url: "#",
       icon: <PieChartIcon />,
     },
     {
-      name: "Travel",
+      name: "Proximamente.",
       url: "#",
       icon: <MapIcon />,
     },
   ],
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: <GalleryVerticalEndIcon />,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: <AudioLinesIcon />,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: <TerminalIcon />,
-      plan: "Free",
-    },
-  ],
+  
 };
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

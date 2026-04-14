@@ -93,7 +93,7 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
                 <SparklesIcon />
-                Upgrade to Pro
+                Soon
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -107,11 +107,11 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
                 <CreditCardIcon />
-                Billing
+                Soon
               </DropdownMenuItem>
               <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
                 <BellIcon />
-                Notifications
+                Notificaciones
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
