@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { SchoolCreateSchema, SchoolTypeEnum } from "@/features/school/data/schemas/school.schema";
 import { createSchool } from "@/features/school/presentation/actions/school/create-school-action";
 import { appToast, showErrorList } from "@/lib/toast/toast";
-import { Button } from "@/components/ui/button";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -101,13 +101,13 @@ export default function RegisterSchoolForm() {
       </div>
 
       <div className="pt-4">
-        <Button
-          type="submit"
+        <FormSubmitButton
+          pendingText="Registrando escuela..."
           className="w-full h-14 bg-[#1E3A5F] hover:bg-[#152B47] text-white text-lg font-semibold shadow-lg"
         >
           Registrar escuela
           <ArrowRight className="w-5 h-5 ml-2" />
-        </Button>
+        </FormSubmitButton>
       </div>
 
       <div className="text-center pt-2">

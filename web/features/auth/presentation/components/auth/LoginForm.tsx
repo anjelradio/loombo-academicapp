@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { LoginFormSchema } from "@/features/auth/data/schemas/auth.schema";
 import { useAppStore } from "@/lib/store/appStore";
 import { appToast, showErrorList } from "@/lib/toast/toast";
-import { Button } from "@/components/ui/button";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "../../actions/auth/login-user-action";
@@ -93,9 +93,12 @@ export default function LoginForm() {
         </a>
       </div>
 
-      <Button type="submit" className="w-full h-12 bg-[#1E3A5F] hover:bg-[#152B47] text-white">
+      <FormSubmitButton
+        pendingText="Iniciando sesión..."
+        className="w-full h-12 bg-[#1E3A5F] hover:bg-[#152B47] text-white"
+      >
         Iniciar sesión
-      </Button>
+      </FormSubmitButton>
 
       <p className="text-center text-sm text-gray-600">
         ¿No tienes una cuenta?{" "}

@@ -8,13 +8,10 @@ from app.core.config import settings
 # prod
 raw_url = os.environ["DATABASE_URL"]
 url = raw_url
-
 if url.startswith("postgres//"):
     url = "postgresql+psycopg://" + url[len("postgres://") :]
 elif url.startswith("postgresql://") and "+psycopg" not in url:
     url = "postgresql+psycopg://" + url[len("postgresql://") :]
-
-
 engine = create_engine(url, pool_pre_ping=True)
 
 

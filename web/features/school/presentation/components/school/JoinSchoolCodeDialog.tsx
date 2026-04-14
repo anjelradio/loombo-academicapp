@@ -8,6 +8,7 @@ import { joinSchoolByCode } from "@/features/school/presentation/actions/school/
 import { SchoolJoinByCodeSchema } from "@/features/school/data/schemas/school.schema";
 import { appToast, showErrorList } from "@/lib/toast/toast";
 import { Button } from "@/components/ui/button";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import {
   Dialog,
   DialogContent,
@@ -125,14 +126,14 @@ export default function JoinSchoolCodeDialog() {
               >
                 Cancelar
               </Button>
-              <Button
-                type="submit"
+              <FormSubmitButton
+                pendingText="Uniéndote..."
                 className="h-12 bg-[#1E3A5F] hover:bg-[#152B47] text-white sm:min-w-36"
                 disabled={accessCode.length !== 6}
               >
                 Continuar
                 <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              </FormSubmitButton>
             </div>
           </form>
         </DialogContent>

@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 
 import {
   DropdownMenu,
@@ -9,27 +8,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon, PlusIcon } from "lucide-react"
-import { School } from "@/lib/types"
-import { useRouter } from "next/navigation"
-import { useAppStore } from "@/lib/store/appStore"
+} from "@/components/ui/sidebar";
+import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
+import { School } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useAppStore } from "@/lib/store/appStore";
+import Link from "next/link";
 
-
-export function SchoolSwitcher({
-  schools,
-}: {
-  schools: School[]
-}) {
-  const router = useRouter()
-  const {selectedSchool, setSelectedSchool} = useAppStore()
-  const { isMobile } = useSidebar()
+export function SchoolSwitcher({ schools }: { schools: School[] }) {
+  const router = useRouter();
+  const { selectedSchool, setSelectedSchool } = useAppStore();
+  const { isMobile } = useSidebar();
 
   const schoolTypeLabel =
     selectedSchool?.type === "private"
@@ -38,8 +33,7 @@ export function SchoolSwitcher({
         ? "Público"
         : selectedSchool?.type === "charter"
           ? "De convenio"
-          : ""
-
+          : "";
 
   return (
     <SidebarMenu>
@@ -54,7 +48,9 @@ export function SchoolSwitcher({
                 {/* {activeTeam.logo_image ?? ""} */}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{selectedSchool?.name}</span>
+                <span className="truncate font-medium">
+                  {selectedSchool?.name}
+                </span>
                 <span className="truncate text-xs">{schoolTypeLabel}</span>
               </div>
               <ChevronsUpDownIcon className="ml-auto" />
@@ -72,7 +68,10 @@ export function SchoolSwitcher({
             {schools.map((school, index) => (
               <DropdownMenuItem
                 key={school.id}
-                onClick={() => {setSelectedSchool(school);router.push(`/${school.id}/inicio`)}}
+                onClick={() => {
+                  setSelectedSchool(school);
+                  router.push(`/${school.id}/inicio`);
+                }}
                 className="gap-2 p-2 focus:bg-accent/70 focus:text-accent-foreground"
               >
                 <div className="flex size-6 items-center justify-center rounded-md border border-border bg-accent/35">
@@ -83,15 +82,17 @@ export function SchoolSwitcher({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2 focus:bg-accent/70 focus:text-accent-foreground">
-              <div className="flex size-6 items-center justify-center rounded-md border border-border bg-transparent">
-                <PlusIcon className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Unirse</div>
-            </DropdownMenuItem>
+            <Link href={"/inicio"}>
+              <DropdownMenuItem className="gap-2 p-2 focus:bg-accent/70 focus:text-accent-foreground">
+                <div className="flex size-6 items-center justify-center rounded-md border border-border bg-transparent">
+                  <PlusIcon className="size-4" />
+                </div>
+                <div className="font-medium text-muted-foreground">Unirse o Crear</div>
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

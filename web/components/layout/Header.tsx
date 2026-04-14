@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { useAppStore } from "@/lib/store/appStore";
 import { useRouter } from "next/navigation";
 import { logout } from "@/features/auth/presentation/actions/auth/logout-user-action";
+import Image from "next/image";
 
 export default function Header() {
   const router = useRouter();
@@ -23,10 +24,15 @@ export default function Header() {
     <header className="w-full relative z-10">
       <div className="flex items-center justify-between px-8 py-5">
         {/* Logo - Now visible on mobile */}
-        <div className="flex items-center">
-          <h1 className="text-white text-2xl font-bold tracking-tight">
-            AppAcademica
-          </h1>
+        <div className="flex items-center gap-3 md:ml-5">
+          <Image
+            src="/logos/loombo-white.png"
+            alt="LoomBo logo"
+            width={55}
+            height={55}
+            priority
+          />
+          <h1 className="text-white text-3xl md:text-5xl font-bold">LoomBo</h1>
         </div>
 
         {/* User section */}
