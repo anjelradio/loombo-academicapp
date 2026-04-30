@@ -9,19 +9,19 @@ import {
 
 export default function RegisterSchoolPage() {
   return (
-    <div className="flex-1 container mx-auto px-8 py-12 flex items-center justify-center">
-      <Card className="w-full max-w-2xl bg-white shadow-2xl border-none">
-        <CardHeader className="space-y-3 pb-6">
-          <CardTitle className="text-3xl font-bold text-center text-[#1E3A5F]">
+    <div className="flex flex-1 items-center justify-center px-0 py-8 md:px-10 md:py-10 lg:px-14">
+      <Card className="mx-4 w-[calc(100%-2rem)] max-w-3xl rounded-3xl border-none bg-white shadow-[0_28px_60px_-28px_rgba(10,31,61,0.55)] md:mx-0 md:w-full">
+        <CardHeader className="space-y-3 border-b border-slate-200/80 pb-6 pt-8">
+          <CardTitle className="text-center text-3xl font-semibold text-[#1E3A5F] sm:text-4xl">
             Registra tu institución
           </CardTitle>
-          <CardDescription className="text-center text-base text-gray-600">
-            Completa los siguientes datos para crear tu colegio en la plataforma
+          <CardDescription className="mx-auto max-w-xl text-center text-base leading-relaxed text-slate-600">
+            Completa la informacion principal para habilitar tu institucion en la plataforma.
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-            <RegisterSchoolForm/>
+        <CardContent className="px-6 pb-8 pt-6 sm:px-8 md:px-10">
+          <RegisterSchoolForm />
         </CardContent>
       </Card>
     </div>

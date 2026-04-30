@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from app.modules.schools.models import School, SchoolRole, SchoolUser
+from app.modules.schools.permissions import ensure_owner
 from app.modules.schools.repositories import SchoolRepository, SchoolUserRepository
 from app.modules.schools.schemas import (
     SchoolCreate,
@@ -23,20 +24,6 @@ class SchoolService:
 
     def list(self) -> list[School]:
         return self.school.list()
-
-    def _ensure_owner(self, school_id: UUID, user_id: UUID) -> None:
-        membership = self.school_user.get_by_user_and_school(user_id, school_id)
-        if not membership:
-            raise HTTPException(status_code=403, detail="No perteneces a esta escuela")
-
-        owner_membership = self.school_user.get_by_user_school_and_role(
-            user_id, school_id, SchoolRole.OWNER
-        )
-        if not owner_membership:
-            raise HTTPException(
-                status_code=403,
-                detail="Solo el owner puede gestionar usuarios de la escuela",
-            )
 
     def create(self, payload: SchoolCreate, owner_id: UUID) -> School:
         if self.school.get_by_name(payload.name):
@@ -99,7 +86,7 @@ class SchoolService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(school_id, user_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         target_role = None
         if role == SchoolUsersFilterRole.ADMIN:
@@ -127,7 +114,7 @@ class SchoolService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(school_id, user_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         target_memberships = self.school_user.list_non_owner_by_user_and_school(
             target_user_id, school_id
@@ -147,7 +134,7 @@ class SchoolService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(school_id, user_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         target_memberships = self.school_user.list_manageable_roles_by_user_and_school(
             target_user_id, school_id

@@ -15,7 +15,7 @@ from app.modules.schools.schemas import (
 )
 from app.modules.schools.services import SchoolInviteService, SchoolService
 
-router = APIRouter(prefix="/school", tags=["Escuela"])
+router = APIRouter(prefix="/schools", tags=["Escuela"])
 
 
 @router.get("/", response_model=list[SchoolRead])

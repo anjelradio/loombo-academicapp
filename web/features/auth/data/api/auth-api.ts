@@ -1,106 +1,83 @@
-import { env } from "@/lib/config/env";
-import { parseError } from "@/lib/api/error-parser";
-import type { AuthResult } from "../types/auth.types";
+import { env } from "@/features/shared/infrastructure/config/env";
+import {
+  apiRequestJson,
+  apiRequestStatus,
+} from "@/features/shared/infrastructure/api/api-client";
+import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
+import type { ApiActionResult } from "@/features/shared/infrastructure/types/api-resource";
+import type {
+  AuthResult,
+} from "../types/auth.types";
 import {
   LoginFormSchema,
   LoginResponseSchema,
+  RequestPasswordResetOtpFormSchema,
   RegisterFormSchema,
-} from "../schemas/auth.schema";
+  VerifyPasswordResetOtpFormSchema,
+} from "../schemas/auth";
+import { toAuthSessionEntity } from "../mappers/auth/auth-session.mapper";
+import { toRegisterRequestDto } from "../mappers/auth/register.mapper";
 
 const baseUrl = `${env.API_URL}/auth`;
 
 export const authApi = {
   async login(data: unknown): Promise<AuthResult> {
-    const result = LoginFormSchema.safeParse(data);
-    if (!result.success) {
-      return {
-        ok: false,
-        errors: result.error.issues.map((issue) => issue.message),
-      };
+    const input = parseWithSchema(LoginFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
-      });
-      const responseData = await res.json();
-
-      if (!res.ok) {
-        return {
-          ok: false,
-          errors: parseError(responseData),
-        };
-      }
-
-      const parsed = LoginResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return {
-          ok: false,
-          errors: ["Error en la respuesta del servidor"],
-        };
-      }
-
-      return {
-        ok: true,
-        data: {
-          accessToken: parsed.data.access_token,
-          user: parsed.data.user,
-        },
-      };
-    } catch {
-      return {
-        ok: false,
-        errors: ["Error de conexión o del servidor"],
-      };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/login`,
+      method: "POST",
+      body: input.data,
+      fallbackMessage: "Error al iniciar sesion.",
+      responseSchema: LoginResponseSchema,
+      mapData: toAuthSessionEntity,
+    });
   },
 
   async register(data: unknown): Promise<AuthResult> {
-    const result = RegisterFormSchema.safeParse(data);
-    if (!result.success) {
-      return {
-        ok: false,
-        errors: result.error.issues.map((issue) => issue.message),
-      };
+    const input = parseWithSchema(RegisterFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
-      });
-      const responseData = await res.json();
+    return apiRequestJson({
+      url: `${baseUrl}/register`,
+      method: "POST",
+      body: toRegisterRequestDto(input.data),
+      fallbackMessage: "Error al registrarse.",
+      responseSchema: LoginResponseSchema,
+      mapData: toAuthSessionEntity,
+    });
+  },
 
-      if (!res.ok) {
-        return {
-          ok: false,
-          errors: parseError(responseData),
-        };
-      }
-
-      const parsed = LoginResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return {
-          ok: false,
-          errors: ["Error en la respuesta del servidor"],
-        };
-      }
-
-      return {
-        ok: true,
-        data: {
-          accessToken: parsed.data.access_token,
-          user: parsed.data.user,
-        },
-      };
-    } catch {
-      return {
-        ok: false,
-        errors: ["Error de conexión o del servidor"],
-      };
+  async requestPasswordResetOtp(data: unknown): Promise<ApiActionResult> {
+    const input = parseWithSchema(RequestPasswordResetOtpFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
+
+    return apiRequestStatus({
+      url: `${baseUrl}/password/request-otp`,
+      method: "POST",
+      body: input.data,
+      fallbackMessage: "Error al solicitar codigo OTP.",
+    });
+  },
+
+  async verifyPasswordResetOtp(data: unknown): Promise<ApiActionResult> {
+    const input = parseWithSchema(VerifyPasswordResetOtpFormSchema, data);
+    if (!input.ok) {
+      return input;
+    }
+
+    return apiRequestStatus({
+      url: `${baseUrl}/password/verify-otp`,
+      method: "POST",
+      body: input.data,
+      fallbackMessage: "Error al verificar codigo OTP.",
+    });
   },
 };

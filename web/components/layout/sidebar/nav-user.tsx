@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAppStore } from "@/lib/store/appStore";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
 import { useRouter } from "next/navigation";
 import { logout } from "@/features/auth/presentation/actions/auth/logout-user-action";
 import {
@@ -50,17 +50,17 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="rounded-xl border border-[#2E567E]/60 bg-[#163554] text-[#EAF2FF] data-[state=open]:bg-[#21466C] data-[state=open]:text-white"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
                   src={"/avatars/shadcn.jpg"}
-                  alt={user?.first_name}
+                  alt={user?.firstName}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.first_name}</span>
+                <span className="truncate font-medium">{user?.firstName}</span>
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDownIcon className="ml-auto size-4" />
@@ -75,15 +75,15 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={"/avatars/shadcn.jpg"}
-                    alt={user?.first_name}
-                  />
+                    <AvatarImage
+                      src={"/avatars/shadcn.jpg"}
+                      alt={user?.firstName}
+                    />
                   <AvatarFallback className="rounded-lg">U</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user?.first_name}
+                    {user?.firstName}
                   </span>
                   <span className="truncate text-xs">{user?.email}</span>
                 </div>

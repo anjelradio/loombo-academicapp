@@ -147,7 +147,12 @@
   --sidebar-border: rgb(147 178 214 / 52%);
   --sidebar-ring: #7fb0ff;
 
-  background: var(--sidebar);
+  background:
+    radial-gradient(circle at 12% 10%, rgb(127 176 255 / 18%), transparent 32%),
+    linear-gradient(rgb(159 193 234 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(159 193 234 / 8%) 1px, transparent 1px),
+    var(--sidebar);
+  background-size: auto, 18px 18px, 18px 18px, auto;
 }
 
 .school-theme[data-slot="sidebar-wrapper"] {

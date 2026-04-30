@@ -16,9 +16,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
-import { School } from "@/lib/types";
+import type { School } from "@/features/school/domain/entities/school";
 import { useRouter } from "next/navigation";
-import { useAppStore } from "@/lib/store/appStore";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
 import Link from "next/link";
 
 export function SchoolSwitcher({ schools }: { schools: School[] }) {
@@ -42,7 +42,7 @@ export function SchoolSwitcher({ schools }: { schools: School[] }) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="rounded-xl border border-[#2E567E]/60 bg-[#163554] text-[#EAF2FF] data-[state=open]:bg-[#21466C] data-[state=open]:text-white"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 {/* {activeTeam.logo_image ?? ""} */}

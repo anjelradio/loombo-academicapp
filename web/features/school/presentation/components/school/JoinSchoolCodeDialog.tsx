@@ -6,22 +6,18 @@ import { ArrowRight } from "lucide-react";
 
 import { joinSchoolByCode } from "@/features/school/presentation/actions/school/join-school-action";
 import { SchoolJoinByCodeSchema } from "@/features/school/data/schemas/school.schema";
-import { appToast, showErrorList } from "@/lib/toast/toast";
+import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
+import { ModalSecondaryButton } from "@/features/shared/components/modals/ModalSecondaryButton";
+import { appToast } from "@/features/shared/components/toast/toast";
+import { submitWithSchema } from "@/features/shared/infrastructure/forms/submit-with-schema";
 import { Button } from "@/components/ui/button";
-import { FormSubmitButton } from "@/components/ui/form-submit-button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
+import AppModal from "@/features/shared/components/modals/AppModal";
 
 type InicioModalKey = "joinCode" | null;
 
@@ -41,55 +37,38 @@ export default function JoinSchoolCodeDialog() {
   };
 
   const handleSubmit = async () => {
-    const data = {
-      code: accessCode,
-    };
-
-    const result = SchoolJoinByCodeSchema.safeParse(data);
-    if (!result.success) {
-      showErrorList(result.error.issues.map((issue) => issue.message));
-      return;
-    }
-
-    const response = await joinSchoolByCode(result.data);
-    if (response?.ok && response.data) {
-      setAccessCode("");
-      setActiveModal(null);
-      appToast.success("Te uniste correctamente a la escuela");
-      router.push("/");
-    } else {
-      showErrorList(response?.errors);
-    }
+    await submitWithSchema({
+      schema: SchoolJoinByCodeSchema,
+      payload: {
+        code: accessCode,
+      },
+      action: joinSchoolByCode,
+      onSuccess: () => {
+        setAccessCode("");
+        setActiveModal(null);
+        appToast.success("Te uniste correctamente a la escuela");
+        router.push("/");
+      },
+    });
   };
 
   return (
     <>
       <Button
-        className="flex-1 h-14 bg-white hover:bg-white/90 text-[#1E3A5F] text-lg font-semibold shadow-2xl transition-all cursor-pointer"
+        className="h-12 w-full rounded-xl bg-[#1E3A5F] text-base font-semibold text-white shadow-[0_18px_34px_-20px_rgba(10,31,61,0.95)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#152B47] hover:shadow-[0_24px_44px_-22px_rgba(10,31,61,0.9)] sm:h-14 sm:w-auto sm:min-w-52 sm:text-lg"
         onClick={() => setActiveModal("joinCode")}
       >
         Ingresar código
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
 
-      <Dialog open={isJoinCodeModalOpen} onOpenChange={handleModalChange}>
-        <DialogContent
-          showCloseButton={false}
-          className="max-w-[calc(100%-2rem)] sm:max-w-xl bg-white p-0 rounded-2xl"
-        >
-          <div className="px-6 pt-7 pb-5 border-b border-gray-200">
-            <DialogHeader className="space-y-2">
-              <DialogTitle className="text-2xl text-[#1E3A5F] font-bold">
-                Ingresa tu código de acceso
-              </DialogTitle>
-              <DialogDescription className="text-sm text-gray-600">
-                Escribe el código compartido por tu administrador para unirte a
-                una escuela existente.
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-
-          <form action={handleSubmit} className="px-6 py-6 flex flex-col gap-6">
+      <AppModal
+        open={isJoinCodeModalOpen}
+        onOpenChange={handleModalChange}
+        title="Ingresa tu código de acceso"
+        description="Escribe el código compartido por tu administrador para unirte a una escuela existente."
+      >
+          <form action={handleSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <Label htmlFor="accessCode" className="text-gray-700 text-sm">
                 Código de acceso
@@ -118,26 +97,20 @@ export default function JoinSchoolCodeDialog() {
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                className="h-12 border-gray-300 text-gray-700 hover:bg-gray-50"
-                onClick={() => setActiveModal(null)}
-              >
+              <ModalSecondaryButton onClick={() => setActiveModal(null)}>
                 Cancelar
-              </Button>
-              <FormSubmitButton
+              </ModalSecondaryButton>
+              <SubmitButton
                 pendingText="Uniéndote..."
                 className="h-12 bg-[#1E3A5F] hover:bg-[#152B47] text-white sm:min-w-36"
                 disabled={accessCode.length !== 6}
               >
                 Continuar
                 <ArrowRight className="w-4 h-4 ml-2" />
-              </FormSubmitButton>
+              </SubmitButton>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+      </AppModal>
     </>
   );
 }

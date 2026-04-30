@@ -1,228 +1,166 @@
-import { parseError } from "@/lib/api/error-parser";
-import { getToken } from "@/lib/api/get-token";
-import { env } from "@/lib/config/env";
+import { getToken } from "@/features/shared/infrastructure/auth/get-token";
+import { env } from "@/features/shared/infrastructure/config/env";
+import {
+  errorResult,
+} from "@/features/shared/infrastructure/errors/api-error-result";
+import {
+  apiRequestJson,
+  apiRequestStatus,
+} from "@/features/shared/infrastructure/api/api-client";
+import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
 
 import {
   SchoolCreateSchema,
   SchoolJoinByCodeSchema,
-  SchoolListSchema,
-  SchoolSchema,
+  SchoolResponseListSchema,
+  SchoolResponseSchema,
 } from "../schemas/school.schema";
 import {
   SchoolMemberFilterRoleEnum,
-  SchoolMemberSchema,
-  SchoolMemberListSchema,
+  SchoolMemberResponseListSchema,
+  SchoolMemberResponseSchema,
 } from "../schemas/school-member.schema";
+import {
+  toSchoolEntity,
+  toSchoolEntityList,
+} from "../mappers/school/school.mapper";
+import {
+  toSchoolMemberEntity,
+  toSchoolMemberEntityList,
+} from "../mappers/school-member/school-member.mapper";
+import type {
+  SchoolActionResult,
+  SchoolListResult,
+  SchoolMemberListResult,
+  SchoolMemberResult,
+  SchoolResult,
+} from "../types/school.types";
 
-const baseUrl = `${env.API_URL}/school`;
+const baseUrl = `${env.API_URL}/schools`;
 
 export const schoolApi = {
-  async getSchoolsByUser() {
+  async getSchoolsByUser(): Promise<SchoolListResult> {
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/by_user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = SchoolListSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/by_user`,
+      method: "GET",
+      token,
+      cache: "no-store",
+      fallbackMessage: "No se pudieron obtener las escuelas.",
+      responseSchema: SchoolResponseListSchema,
+      mapData: toSchoolEntityList,
+    });
   },
 
-  async createSchool(data: unknown) {
-    const result = SchoolCreateSchema.safeParse(data);
-    if (!result.success) {
-      return {
-        ok: false,
-        errors: result.error.issues.map((e) => e.message),
-      };
+  async createSchool(data: unknown): Promise<SchoolResult> {
+    const input = parseWithSchema(SchoolCreateSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(baseUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = SchoolSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: baseUrl,
+      method: "POST",
+      token,
+      body: input.data,
+      fallbackMessage: "No se pudo crear la escuela.",
+      responseSchema: SchoolResponseSchema,
+      mapData: toSchoolEntity,
+    });
   },
 
-  async joinSchoolByCode(data: unknown) {
-    const result = SchoolJoinByCodeSchema.safeParse(data);
-    if (!result.success) {
-      return {
-        ok: false,
-        errors: result.error.issues.map((e) => e.message),
-      };
+  async joinSchoolByCode(data: unknown): Promise<SchoolResult> {
+    const input = parseWithSchema(SchoolJoinByCodeSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/join`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = SchoolSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/join`,
+      method: "POST",
+      token,
+      body: input.data,
+      fallbackMessage: "No se pudo unir a la escuela.",
+      responseSchema: SchoolResponseSchema,
+      mapData: toSchoolEntity,
+    });
   },
 
-  async getUsersBySchool(schoolId: string, role?: "admin" | "teacher") {
+  async getUsersBySchool(
+    schoolId: string,
+    role?: "admin" | "teacher",
+  ): Promise<SchoolMemberListResult> {
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
     if (role) {
       const roleResult = SchoolMemberFilterRoleEnum.safeParse(role);
       if (!roleResult.success) {
-        return { ok: false, errors: ["Rol de filtro invalido"] };
+        return errorResult("Rol de filtro invalido");
       }
     }
 
-    try {
-      const query = role ? `?role=${role}` : "";
-      const res = await fetch(`${baseUrl}/${schoolId}/users${query}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = SchoolMemberListSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    const query = role ? `?role=${role}` : "";
+    return apiRequestJson({
+      url: `${baseUrl}/${schoolId}/users${query}`,
+      method: "GET",
+      token,
+      cache: "no-store",
+      fallbackMessage: "No se pudieron obtener los usuarios de la escuela.",
+      responseSchema: SchoolMemberResponseListSchema,
+      mapData: toSchoolMemberEntityList,
+    });
   },
 
-  async deleteUserFromSchool(schoolId: string, targetUserId: string) {
+  async deleteUserFromSchool(
+    schoolId: string,
+    targetUserId: string,
+  ): Promise<SchoolActionResult> {
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/${schoolId}/users/${targetUserId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        const responseData = await res.json();
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      return { ok: true };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestStatus({
+      url: `${baseUrl}/${schoolId}/users/${targetUserId}`,
+      method: "DELETE",
+      token,
+      fallbackMessage: "No se pudo eliminar el usuario de la escuela.",
+    });
   },
 
-  async toggleUserRoleInSchool(schoolId: string, targetUserId: string) {
+  async toggleUserRoleInSchool(
+    schoolId: string,
+    targetUserId: string,
+  ): Promise<SchoolMemberResult> {
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/${schoolId}/users/${targetUserId}/role`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = SchoolMemberSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/${schoolId}/users/${targetUserId}/role`,
+      method: "PATCH",
+      token,
+      fallbackMessage: "No se pudo actualizar el rol del usuario.",
+      responseSchema: SchoolMemberResponseSchema,
+      mapData: toSchoolMemberEntity,
+    });
   },
 };

@@ -16,12 +16,14 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useAppStore } from "@/lib/store/appStore";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { navigationByRole } from "./nav-config";
 
 export function NavMain() {
+  const pathname = usePathname();
   const selectedSchool = useAppStore((s) => s.selectedSchool);
   const storePersist = (useAppStore as typeof useAppStore & {
     persist?: {
@@ -50,7 +52,7 @@ export function NavMain() {
   if (!isHydrated) {
     return (
       <SidebarGroup>
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel className="uppercase tracking-[0.14em] text-[#8EA8C7]">Navegacion</SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
@@ -69,7 +71,7 @@ export function NavMain() {
   if (!role) {
     return (
       <SidebarGroup>
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel className="uppercase tracking-[0.14em] text-[#8EA8C7]">Navegacion</SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
@@ -84,7 +86,7 @@ export function NavMain() {
   const items = [...(navigationByRole[role] || [])];
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel className="uppercase tracking-[0.14em] text-[#8EA8C7]">Navegacion</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -95,7 +97,10 @@ export function NavMain() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  className="text-[#EAF2FF] hover:bg-[#21466C]/70 hover:text-white data-[state=open]:bg-[#21466C]/80"
+                >
                   {item.icon}
                   <span>{item.title}</span>
                   <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -103,15 +108,22 @@ export function NavMain() {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link href={`/${schoolId}/${subItem.url}`.replace(/\/{2,}/g, "/")}>
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                    {item.items?.map((subItem) => {
+                      const href = `/${schoolId}/${subItem.url}`.replace(/\/{2,}/g, "/");
+                      const isActive = pathname === href || pathname.startsWith(`${href}/`);
+
+                      return (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          className={isActive ? "bg-[#3B82F6]/22 text-white" : "text-[#BFD0E5] hover:bg-[#21466C]/65 hover:text-white"}
+                        >
+                          <Link href={href}>
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    )})}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>

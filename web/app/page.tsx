@@ -1,4 +1,4 @@
-import { getToken } from "@/lib/api/get-token";
+import { getToken } from "@/features/shared/infrastructure/auth/get-token";
 import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";

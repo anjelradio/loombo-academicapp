@@ -8,11 +8,11 @@ const dateTimeString = z
 
 export const SchoolMemberSchema = z.object({
   id: z.uuid(),
-  first_name: z.string(),
-  last_name: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
   email: z.string(),
   role: SchoolRoleEnum,
-  created_date: dateTimeString,
+  createdDate: dateTimeString,
 });
 
 export type SchoolMember = z.infer<typeof SchoolMemberSchema>;

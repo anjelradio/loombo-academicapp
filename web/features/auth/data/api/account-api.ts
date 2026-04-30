@@ -1,191 +1,142 @@
-import { parseError } from "@/lib/api/error-parser";
-import { getToken } from "@/lib/api/get-token";
-import { env } from "@/lib/config/env";
+import { getToken } from "@/features/shared/infrastructure/auth/get-token";
+import { env } from "@/features/shared/infrastructure/config/env";
+import {
+  errorResult,
+} from "@/features/shared/infrastructure/errors/api-error-result";
+import {
+  apiRequestJson,
+  apiRequestStatus,
+} from "@/features/shared/infrastructure/api/api-client";
+import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
 
+import {
+  toRequestEmailOtpEntity,
+  toVerifyEmailOtpEntity,
+} from "../mappers/account/email-otp.mapper";
+import { toAuthUserEntity } from "../mappers/auth/auth-user.mapper";
+import { toUpdateEmailRequestDto } from "../mappers/account/update-email.mapper";
+import { toUpdatePasswordRequestDto } from "../mappers/account/update-password.mapper";
+import { toUpdateUserProfileRequestDto } from "../mappers/account/update-profile.mapper";
 import {
   RequestEmailOtpResponseSchema,
   UpdateEmailFormSchema,
   UpdateEmailResponseSchema,
   UpdatePasswordFormSchema,
   UpdateUserProfileFormSchema,
+  UpdateUserProfileResponseSchema,
   VerifyEmailOtpFormSchema,
   VerifyEmailOtpResponseSchema,
-} from "../schemas/account.schema";
+} from "../schemas/account";
+import type {
+  RequestEmailOtpResult,
+  UpdateEmailResult,
+  UpdatePasswordResult,
+  UpdateProfileInfoResult,
+  VerifyEmailOtpResult,
+} from "../types/account.types";
 
 const baseUrl = `${env.API_URL}/users`;
 
 export const accountApi = {
-  async requestEmailOtp() {
+  async requestEmailOtp(): Promise<RequestEmailOtpResult> {
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/me/email/request-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = RequestEmailOtpResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/me/email/request-otp`,
+      method: "POST",
+      token,
+      fallbackMessage: "No se pudo enviar el codigo OTP.",
+      responseSchema: RequestEmailOtpResponseSchema,
+      mapData: toRequestEmailOtpEntity,
+    });
   },
 
-  async verifyEmailOtp(data: unknown) {
-    const result = VerifyEmailOtpFormSchema.safeParse(data);
-    if (!result.success) {
-      return { ok: false, errors: result.error.issues.map((e) => e.message) };
+  async verifyEmailOtp(data: unknown): Promise<VerifyEmailOtpResult> {
+    const input = parseWithSchema(VerifyEmailOtpFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/me/email/verify-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = VerifyEmailOtpResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/me/email/verify-otp`,
+      method: "POST",
+      token,
+      body: input.data,
+      fallbackMessage: "No se pudo verificar el codigo OTP.",
+      responseSchema: VerifyEmailOtpResponseSchema,
+      mapData: toVerifyEmailOtpEntity,
+    });
   },
 
-  async updateEmail(data: unknown) {
-    const result = UpdateEmailFormSchema.safeParse(data);
-    if (!result.success) {
-      return { ok: false, errors: result.error.issues.map((e) => e.message) };
+  async updateEmail(data: unknown): Promise<UpdateEmailResult> {
+    const input = parseWithSchema(UpdateEmailFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/me/email`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = UpdateEmailResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/me/email`,
+      method: "PATCH",
+      token,
+      body: toUpdateEmailRequestDto(input.data),
+      fallbackMessage: "No se pudo actualizar el correo.",
+      responseSchema: UpdateEmailResponseSchema,
+      mapData: toAuthUserEntity,
+    });
   },
 
-  async updatePassword(data: unknown) {
-    const result = UpdatePasswordFormSchema.safeParse(data);
-    if (!result.success) {
-      return { ok: false, errors: result.error.issues.map((e) => e.message) };
+  async updatePassword(data: unknown): Promise<UpdatePasswordResult> {
+    const input = parseWithSchema(UpdatePasswordFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/me/password`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      if (!res.ok) {
-        const responseData = await res.json();
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      return { ok: true };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestStatus({
+      url: `${baseUrl}/me/password`,
+      method: "PATCH",
+      token,
+      body: toUpdatePasswordRequestDto(input.data),
+      fallbackMessage: "No se pudo actualizar la contrasena.",
+    });
   },
 
-  async updateProfileInfo(data: unknown) {
-    const result = UpdateUserProfileFormSchema.safeParse(data);
-    if (!result.success) {
-      return { ok: false, errors: result.error.issues.map((e) => e.message) };
+  async updateProfileInfo(data: unknown): Promise<UpdateProfileInfoResult> {
+    const input = parseWithSchema(UpdateUserProfileFormSchema, data);
+    if (!input.ok) {
+      return input;
     }
 
     const token = await getToken();
     if (!token) {
-      return { ok: false, errors: ["No autorizado"] };
+      return errorResult("No autorizado");
     }
 
-    try {
-      const res = await fetch(`${baseUrl}/me/profile`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(result.data),
-      });
-
-      const responseData = await res.json();
-      if (!res.ok) {
-        return { ok: false, errors: parseError(responseData) };
-      }
-
-      const parsed = UpdateEmailResponseSchema.safeParse(responseData);
-      if (!parsed.success) {
-        return { ok: false, errors: ["Error en la respuesta del servidor"] };
-      }
-
-      return { ok: true, data: parsed.data };
-    } catch {
-      return { ok: false, errors: ["Error de conexion o del servidor"] };
-    }
+    return apiRequestJson({
+      url: `${baseUrl}/me/profile`,
+      method: "PATCH",
+      token,
+      body: toUpdateUserProfileRequestDto(input.data),
+      fallbackMessage: "No se pudo actualizar el perfil.",
+      responseSchema: UpdateUserProfileResponseSchema,
+      mapData: toAuthUserEntity,
+    });
   },
 };

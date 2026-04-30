@@ -8,4 +8,12 @@ export const authRepository = {
   register(data: unknown) {
     return authApi.register(data);
   },
+
+  requestPasswordResetOtp(data: unknown) {
+    return authApi.requestPasswordResetOtp(data);
+  },
+
+  verifyPasswordResetOtp(data: unknown) {
+    return authApi.verifyPasswordResetOtp(data);
+  },
 };

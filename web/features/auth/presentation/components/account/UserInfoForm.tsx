@@ -1,75 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { updateProfileInfo } from "@/features/auth/presentation/actions/account/update-profile-info-action";
-import { UpdateUserProfileFormSchema } from "@/features/auth/data/schemas/account.schema";
-import { useAppStore } from "@/lib/store/appStore";
-import { appToast, showErrorList } from "@/lib/toast/toast";
-
+import { UpdateUserProfileFormSchema } from "@/features/auth/data/schemas/account";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
+import { appToast } from "@/features/shared/components/toast/toast";
+import { FormTextField } from "@/features/shared/components/forms/FormTextField";
+import { SecondaryButton } from "@/features/shared/components/forms/SecondaryButton";
+import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { submitWithSchema } from "@/features/shared/infrastructure/forms/submit-with-schema";
 
 export default function UserInfoForm() {
   const { user, setUser } = useAppStore();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const displayedFirstName = isEditing ? firstName : (user?.first_name ?? "");
-  const displayedLastName = isEditing ? lastName : (user?.last_name ?? "");
-
-  const handleStartEdit = () => {
-    setFirstName(user?.first_name ?? "");
-    setLastName(user?.last_name ?? "");
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setFirstName(user?.first_name ?? "");
-    setLastName(user?.last_name ?? "");
-    setIsEditing(false);
-  };
-
-  const handleSubmit = async () => {
-    const data = {
-      first_name: firstName,
-      last_name: lastName,
-    };
-
-    const result = UpdateUserProfileFormSchema.safeParse(data);
-    if (!result.success) {
-      showErrorList(result.error.issues.map((issue) => issue.message));
-      return;
-    }
-
-    const response = await updateProfileInfo(result.data);
-    if (!response?.ok || !("data" in response) || !response.data) {
-      showErrorList(response?.errors);
-      return;
-    }
-
-    setUser(response.data);
-    setFirstName(response.data.first_name);
-    setLastName(response.data.last_name);
-    setIsEditing(false);
-    appToast.success("Informacion personal actualizada");
+  const handleSubmit = async (formData: FormData) => {
+    await submitWithSchema({
+      schema: UpdateUserProfileFormSchema,
+      payload: {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+      },
+      action: updateProfileInfo,
+      onSuccess: ({ data }) => {
+        setUser(data);
+        formRef.current?.reset();
+        setIsEditing(false);
+        appToast.success("Informacion personal actualizada");
+      },
+    });
   };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
+    <form
+      ref={formRef}
+      key={`${user?.id ?? "user"}-${user?.firstName ?? ""}-${user?.lastName ?? ""}`}
+      action={handleSubmit}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-semibold text-gray-700">
-            Nombre
-          </Label>
-          <Input
+          <FormTextField
             id="firstName"
             type="text"
-            name="first_name"
-            value={displayedFirstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            name="firstName"
+            label="Nombre"
+            labelClassName="text-sm font-semibold"
+            defaultValue={user?.firstName ?? ""}
             placeholder="Nombre"
             readOnly={!isEditing}
             disabled={!isEditing}
@@ -78,15 +58,13 @@ export default function UserInfoForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-semibold text-gray-700">
-            Apellidos
-          </Label>
-          <Input
+          <FormTextField
             id="lastName"
             type="text"
-            name="last_name"
-            value={displayedLastName}
-            onChange={(e) => setLastName(e.target.value)}
+            name="lastName"
+            label="Apellidos"
+            labelClassName="text-sm font-semibold"
+            defaultValue={user?.lastName ?? ""}
             placeholder="Apellidos"
             readOnly={!isEditing}
             disabled={!isEditing}
@@ -98,22 +76,25 @@ export default function UserInfoForm() {
 
       {isEditing ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            className="h-11 border-gray-300 text-gray-700 hover:bg-gray-100"
+          <SecondaryButton
+            onClick={() => {
+              formRef.current?.reset();
+              setIsEditing(false);
+            }}
           >
             Cancelar
-          </Button>
-          <Button type="submit" className="h-11 bg-[#1E3A5F] text-white hover:bg-[#152B47]">
+          </SecondaryButton>
+          <SubmitButton
+            pendingText="Guardando..."
+            className="h-11 bg-[#1E3A5F] text-white hover:bg-[#152B47]"
+          >
             Guardar cambios
-          </Button>
+          </SubmitButton>
         </div>
       ) : (
         <Button
           type="button"
-          onClick={handleStartEdit}
+          onClick={() => setIsEditing(true)}
           className="h-11 w-full bg-[#1E3A5F] text-white hover:bg-[#152B47] sm:w-auto"
         >
           Editar

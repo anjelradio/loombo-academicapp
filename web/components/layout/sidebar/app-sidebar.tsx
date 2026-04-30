@@ -71,15 +71,15 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
   const schools = response.ok && "data" in response && response.data ? response.data : [];
   return (
     <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-[#2A4F75]/45 pb-3">
         <SchoolSwitcher schools={schools} />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="pt-2">
         <NavMain />
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-[#2A4F75]/45">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

@@ -1,7 +1,7 @@
 "use client";
 import { LogOut, User } from "lucide-react";
 import { Button } from "../ui/button";
-import { useAppStore } from "@/lib/store/appStore";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
 import { useRouter } from "next/navigation";
 import { logout } from "@/features/auth/presentation/actions/auth/logout-user-action";
 import Image from "next/image";
@@ -22,9 +22,9 @@ export default function Header() {
 
   return (
     <header className="w-full relative z-10">
-      <div className="flex items-center justify-between px-8 py-5">
+      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between px-5 md:px-0 py-8  ">
         {/* Logo - Now visible on mobile */}
-        <div className="flex items-center gap-3 md:ml-5">
+        <div className="flex items-center gap-3">
           <Image
             src="/logos/loombo-white.png"
             alt="LoomBo logo"
@@ -39,7 +39,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <span className="hidden md:inline text-sm font-medium text-white">
-              {user?.first_name} {""} {user?.last_name}
+              {user?.firstName} {""} {user?.lastName}
             </span>
             <button
               type="button"

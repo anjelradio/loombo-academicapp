@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Montserrat, Montserrat_Alternates } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Montserrat,
+  Montserrat_Alternates,
+} from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "@/features/shared/infrastructure/utils/cn";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from uuid import UUID
 
@@ -16,6 +16,13 @@ class InviteStatus(str, Enum):
 class SchoolInviteCreate(SQLModel):
     role: InviteRole
     expires_at: datetime
+
+    @field_validator("expires_at")
+    @classmethod
+    def normalize_expires_at(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
 
 
 class SchoolInviteRead(SQLModel):

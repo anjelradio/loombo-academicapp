@@ -1,16 +1,7 @@
 import SchoolUsersTable from "@/features/school/presentation/components/users/SchoolUsersTable";
 import PageHeading from "@/components/shared/PageHeading";
+import SchoolPageHeader from "@/components/layout/school/SchoolPageHeader";
 import { schoolRepository } from "@/features/school/data/repositories/school.repository";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default async function AdministradoresPage({
   params,
@@ -23,26 +14,9 @@ export default async function AdministradoresPage({
 
   return (
     <>
-      <header className="flex h-14 shrink-0 items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1 text-foreground hover:bg-sidebar-accent/60 hover:text-foreground" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink>Usuarios</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Administradores</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
+      <SchoolPageHeader section="Usuarios" page="Administradores" />
 
-      <div className="flex flex-1 flex-col gap-6 bg-gradient-to-b from-[#08172D] via-[#0A1D35] to-[#071427] p-4 md:p-6">
+      <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
         <PageHeading
           title="Administradores"
           description="Visualiza el personal administrativo vinculado a esta escuela y prepara futuras acciones de gestion de roles."

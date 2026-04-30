@@ -1,6 +1,5 @@
-from uuid import UUID
-
 from secrets import compare_digest
+from uuid import UUID
 
 from fastapi import HTTPException
 
@@ -8,13 +7,19 @@ from app.core.config import settings
 from app.core.email import send_email
 from app.core.otp import generate_otp, hash_otp
 from app.core.redis import redis_client
-from app.core.security import create_access_token, decode_token, hash_password, verify_password
-from app.modules.auth.service import validate_password_policy
+from app.core.security import (
+    create_access_token,
+    decode_token,
+    hash_password,
+    verify_password,
+)
+from app.core.validators import validate_password_policy
+from app.dependencies.auth import DBSession
 from app.modules.users.repository import UserRepository
-from app.modules.users.schema import (
+from app.modules.users.schemas import (
+    RequestEmailOtpResponse,
     UpdateEmailRequest,
     UpdatePasswordRequest,
-    RequestEmailOtpResponse,
     UserProfileUpdate,
     VerifyEmailOtpRequest,
     VerifyEmailOtpResponse,
@@ -22,8 +27,8 @@ from app.modules.users.schema import (
 
 
 class UserService:
-    def __init__(self, repo: UserRepository):
-        self.repo = repo
+    def __init__(self, db: DBSession):
+        self.repo = UserRepository(db)
 
     def update_profile(self, user_id: UUID, payload: UserProfileUpdate):
         user = self.repo.get_by_id(user_id)
@@ -151,10 +156,14 @@ class UserService:
             token_user_id = UUID(token_payload.get("sub", ""))
             token_purpose = token_payload.get("purpose")
         except Exception:
-            raise HTTPException(status_code=401, detail="Token de verificacion invalido")
+            raise HTTPException(
+                status_code=401, detail="Token de verificacion invalido"
+            )
 
         if token_purpose != "change_email" or token_user_id != user_id:
-            raise HTTPException(status_code=403, detail="Token de verificacion invalido")
+            raise HTTPException(
+                status_code=403, detail="Token de verificacion invalido"
+            )
 
         new_email = str(payload.new_email).strip().lower()
         if new_email == user.email.lower():

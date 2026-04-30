@@ -17,7 +17,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { appToast, showErrorList } from "@/lib/toast/toast";
+import { appToast } from "@/features/shared/components/toast/toast";
+import { handleApiResultError } from "@/features/shared/infrastructure/errors/handle-form-errors";
 
 interface SchoolUserRowActionsProps {
   schoolId: string;
@@ -36,21 +37,21 @@ export default function SchoolUserRowActions({
 
   const handleToggleRole = async () => {
     const response = await toggleUserRoleInSchool(schoolId, userId);
-    if (response?.ok) {
+    if (response.ok) {
       appToast.success("Rol actualizado correctamente");
       router.refresh();
     } else {
-      showErrorList(response?.errors);
+      handleApiResultError(response);
     }
   };
 
   const handleDelete = async () => {
     const response = await deleteUserFromSchool(schoolId, userId);
-    if (response?.ok) {
+    if (response.ok) {
       appToast.success("Usuario eliminado correctamente");
       router.refresh();
     } else {
-      showErrorList(response?.errors);
+      handleApiResultError(response);
     }
   };
 

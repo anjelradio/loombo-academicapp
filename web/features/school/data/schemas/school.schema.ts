@@ -1,16 +1,14 @@
 import { z } from "zod";
 
+import { SchoolTypeEnum } from "../../domain/entities/school";
 import {
-  SchoolRoleEnum,
-  SchoolSchema,
-  SchoolTypeEnum,
-} from "../../domain/entities/school";
+  SchoolResponseListSchema,
+  SchoolResponseSchema,
+} from "./school-response.schema";
 
 const schoolNameRegex = /^[A-Za-z0-9À-ÖØ-öø-ÿÑñ .'-]+$/;
 
-export { SchoolRoleEnum, SchoolSchema, SchoolTypeEnum };
-
-export const SchoolListSchema = z.array(SchoolSchema);
+export { SchoolTypeEnum, SchoolResponseSchema, SchoolResponseListSchema };
 
 export const SchoolCreateSchema = z.object({
   name: z

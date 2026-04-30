@@ -1,7 +1,9 @@
 import BackToPreviousButton from "@/features/auth/presentation/components/account/BackToPreviousButton";
-import UserEmailCard from "@/features/auth/presentation/components/account/UserEmailCard";
-import UserInfoCard from "@/features/auth/presentation/components/account/UserInfoCard";
-import UserPasswordCard from "@/features/auth/presentation/components/account/UserPasswordCard";
+import AccountSectionCard from "@/features/auth/presentation/components/account/AccountSectionCard";
+import ChangeEmailButton from "@/features/auth/presentation/components/account/ChangeEmailButton";
+import ChangePasswordButton from "@/features/auth/presentation/components/account/ChangePasswordButton";
+import UserEmailField from "@/features/auth/presentation/components/account/UserEmailField";
+import UserInfoForm from "@/features/auth/presentation/components/account/UserInfoForm";
 
 export default function UserProfilePage() {
   return (
@@ -19,9 +21,29 @@ export default function UserProfilePage() {
         </section>
 
         <section className="space-y-5">
-          <UserInfoCard />
-          <UserEmailCard />
-          <UserPasswordCard />
+          <AccountSectionCard
+            title="Informacion personal"
+            description="Revisa tu nombre y apellido."
+          >
+            <UserInfoForm />
+          </AccountSectionCard>
+
+          <AccountSectionCard
+            title="Correo electronico"
+            description="Este es el correo asociado a tu cuenta."
+            contentClassName="space-y-4"
+          >
+            <UserEmailField />
+            <ChangeEmailButton />
+          </AccountSectionCard>
+
+          <AccountSectionCard
+            title="Contrasena"
+            description="Actualiza la clave de acceso de tu cuenta."
+            contentClassName="flex justify-center pt-2"
+          >
+            <ChangePasswordButton />
+          </AccountSectionCard>
         </section>
       </div>
     </div>

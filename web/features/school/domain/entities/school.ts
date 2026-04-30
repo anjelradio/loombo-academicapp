@@ -6,7 +6,7 @@ export const SchoolTypeEnum = z.enum(["public", "private", "charter"]);
 export const SchoolSchema = z.object({
   id: z.uuid(),
   name: z.string(),
-  logo_image: z.string().nullable(),
+  logoImage: z.string().nullable(),
   type: SchoolTypeEnum,
   phone: z.string(),
   role: SchoolRoleEnum.optional(),

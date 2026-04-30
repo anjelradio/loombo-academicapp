@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from app.modules.schools.models import InviteRole, SchoolInvite, SchoolRole, SchoolUser
+from app.modules.schools.permissions import ensure_owner
 from app.modules.schools.repositories import (
     SchoolInviteRepository,
     SchoolRepository,
@@ -29,20 +30,6 @@ class SchoolInviteService:
         self.school_user = SchoolUserRepository(db)
         self.invite = SchoolInviteRepository(db)
 
-    def _ensure_owner(self, user_id: UUID, school_id: UUID) -> None:
-        membership = self.school_user.get_by_user_and_school(user_id, school_id)
-        if not membership:
-            raise HTTPException(
-                status_code=403,
-                detail="No perteneces a esta escuela",
-            )
-
-        if membership.role != SchoolRole.OWNER:
-            raise HTTPException(
-                status_code=403,
-                detail="Solo el owner puede gestionar invitaciones",
-            )
-
     def _generate_unique_code(self, role: InviteRole) -> str:
         alphabet = ascii_uppercase + digits
         prefix = "T" if role == InviteRole.TEACHER else "A"
@@ -58,11 +45,12 @@ class SchoolInviteService:
         )
 
     def _is_expired(self, expires_at: datetime) -> bool:
-        if expires_at.tzinfo is None:
-            now = datetime.utcnow()
-        else:
-            now = datetime.now(timezone.utc)
-        return expires_at <= now
+        normalized_expires_at = (
+            expires_at.replace(tzinfo=timezone.utc)
+            if expires_at.tzinfo is None
+            else expires_at.astimezone(timezone.utc)
+        )
+        return normalized_expires_at <= datetime.now(timezone.utc)
 
     def _to_read(self, invite: SchoolInvite) -> SchoolInviteRead:
         status = InviteStatus.EXPIRED if self._is_expired(invite.expires_at) else InviteStatus.ACTIVE
@@ -81,7 +69,7 @@ class SchoolInviteService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(user_id, school_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         if self._is_expired(payload.expires_at):
             raise HTTPException(
@@ -122,7 +110,7 @@ class SchoolInviteService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(user_id, school_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         invites = self.invite.list_active_by_school(school_id)
         return [self._to_read(invite) for invite in invites]
@@ -132,7 +120,7 @@ class SchoolInviteService:
         if not school:
             raise HTTPException(status_code=404, detail="Escuela no encontrada")
 
-        self._ensure_owner(user_id, school_id)
+        ensure_owner(self.school_user, user_id, school_id)
 
         invite = self.invite.get_active_by_id(invite_id)
         if not invite or invite.school_id != school_id:

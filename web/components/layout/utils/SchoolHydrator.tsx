@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAppStore } from "@/lib/store/appStore";
-import { School } from "@/lib/types";
+import { useAppStore } from "@/features/shared/presentation/store/app-store";
+import type { School } from "@/features/school/domain/entities/school";
 
 export function SchoolHydrator({ school }: { school: School }) {
   const setSelectedSchool = useAppStore((s) => s.setSelectedSchool);
