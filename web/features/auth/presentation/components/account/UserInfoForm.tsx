@@ -26,6 +26,7 @@ export default function UserInfoForm() {
       },
       action: updateProfileInfo,
       onSuccess: ({ data }) => {
+        if (!data) return;
         setUser(data);
         formRef.current?.reset();
         setIsEditing(false);
