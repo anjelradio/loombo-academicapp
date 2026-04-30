@@ -29,6 +29,7 @@ export default function RegisterForm() {
       },
       action: register,
       onSuccess: ({ data }) => {
+        if (!data) return;
         formRef.current?.reset();
         setUser(data);
         appToast.success("Cuenta creada correctamente");

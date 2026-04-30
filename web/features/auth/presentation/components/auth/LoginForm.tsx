@@ -28,6 +28,7 @@ export default function LoginForm() {
       },
       action: login,
       onSuccess: ({ data }) => {
+        if (!data) return;
         formRef.current?.reset();
         setUser(data);
         appToast.success("Bienvenido de nuevo");
