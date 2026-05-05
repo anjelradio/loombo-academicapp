@@ -72,7 +72,7 @@ export default function InvitationGenerateCards({ schoolId }: InvitationGenerate
 
   return (
     <>
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <section className="grid grid-cols-1 gap-4">
         <InvitationRoleCard
           icon={<ShieldCheckIcon className="h-6 w-6" />}
           title="Invitar Personal Administrativo"

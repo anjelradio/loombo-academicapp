@@ -5,6 +5,10 @@ export const schoolRepository = {
     return schoolApi.getSchoolsByUser();
   },
 
+  getLevels() {
+    return schoolApi.getLevels();
+  },
+
   createSchool(data: unknown) {
     return schoolApi.createSchool(data);
   },
@@ -13,8 +17,14 @@ export const schoolRepository = {
     return schoolApi.joinSchoolByCode(data);
   },
 
-  getUsersBySchool(schoolId: string, role?: "admin" | "teacher") {
-    return schoolApi.getUsersBySchool(schoolId, role);
+  getUsersBySchool(
+    schoolId: string,
+    role?: "admin" | "teacher",
+    page?: number,
+    perPage?: number,
+    name?: string,
+  ) {
+    return schoolApi.getUsersBySchool(schoolId, role, page, perPage, name);
   },
 
   deleteUserFromSchool(schoolId: string, targetUserId: string) {

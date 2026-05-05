@@ -35,7 +35,7 @@ import type {
   VerifyEmailOtpResult,
 } from "../types/account.types";
 
-const baseUrl = `${env.API_URL}/users`;
+const baseUrl = `${env.API_URL}/auth`;
 
 export const accountApi = {
   async requestEmailOtp(): Promise<RequestEmailOtpResult> {

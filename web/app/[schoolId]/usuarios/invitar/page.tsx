@@ -3,6 +3,8 @@ import PageHeading from "@/components/shared/PageHeading";
 import SchoolPageHeader from "@/components/layout/school/SchoolPageHeader";
 import { invitationRepository } from "@/features/school/data/repositories/invitation.repository";
 import InvitationCodesTable from "@/features/school/presentation/components/invitation/InvitationCodesTable";
+import { AccentCard } from "@/features/shared/components/cards/AccentCard";
+import { ContentGridSurface } from "@/features/shared/components/layout/ContentGridSurface";
 
 export default async function InvitationUsersPage({
   params,
@@ -17,19 +19,31 @@ export default async function InvitationUsersPage({
     <>
       <SchoolPageHeader section="Usuarios" page="Invitaciones" />
 
-      <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+      <ContentGridSurface variant="north">
         <PageHeading
           title="Invitaciones"
           description="Crea y gestiona codigos de invitacion para personal administrativo y profesores. Cada codigo se genera segun el tipo de rol de destino."
+          tone="light"
+          titleClassName="text-3xl"
+          descriptionClassName="max-w-3xl"
         />
 
-        <InvitationGenerateCards schoolId={schoolId} />
+        <section className="grid gap-4 xl:grid-cols-[40%_60%]">
+          <div className="space-y-4">
+            <InvitationGenerateCards schoolId={schoolId} />
+          </div>
 
-        <section className="space-y-3">
-          <h2 className="text-2xl font-bold text-[#EAF2FF]">Codigos Activos</h2>
-          <InvitationCodesTable schoolId={schoolId} items={invitations} />
+          <AccentCard
+            variant="base"
+            eyebrow="Historial"
+            title="Codigos activos"
+            description="Administra y monitorea los codigos generados para personal administrativo y docentes."
+            className="p-6"
+          >
+            <InvitationCodesTable schoolId={schoolId} items={invitations} />
+          </AccentCard>
         </section>
-      </div>
+      </ContentGridSurface>
     </>
   );
 }

@@ -5,12 +5,23 @@ import type { ReactNode } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/features/shared/infrastructure/utils/cn";
 
+const modalSizeClass = {
+  sm: "sm:max-w-sm",
+  md: "sm:max-w-md",
+  lg: "sm:max-w-xl",
+  xl: "sm:max-w-2xl",
+  full: "sm:max-w-4xl",
+} as const;
+
+type AppModalSize = keyof typeof modalSizeClass;
+
 type AppModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   description?: string;
   children: ReactNode;
+  size?: AppModalSize;
   className?: string;
   bodyClassName?: string;
   showCloseButton?: boolean;
@@ -22,6 +33,7 @@ export default function AppModal({
   title,
   description,
   children,
+  size = "md",
   className,
   bodyClassName,
   showCloseButton = false,
@@ -30,7 +42,7 @@ export default function AppModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={showCloseButton}
-        className={cn("max-w-[calc(100%-2rem)] rounded-2xl bg-white p-0 sm:max-w-xl", className)}
+        className={cn("max-w-[calc(100%-2rem)] rounded-2xl bg-white p-0", modalSizeClass[size], className)}
       >
         <div className="border-b border-gray-200 px-6 pb-5 pt-7">
           <DialogHeader className="space-y-2">

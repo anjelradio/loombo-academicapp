@@ -9,7 +9,7 @@ import type {
   ApiResult,
 } from "@/features/shared/infrastructure/types/api-resource";
 
-type ApiMethod = "GET" | "POST" | "PATCH" | "DELETE";
+type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 type RequestConfig = {
   url: string;

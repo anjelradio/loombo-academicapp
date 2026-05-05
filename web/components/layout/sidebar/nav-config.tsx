@@ -1,6 +1,17 @@
 "use client"
 import { BookAIcon, School, Users } from "lucide-react";
 
+const academicNavigation = {
+  title: "Académico",
+  url: "#",
+  icon: <BookAIcon />,
+  isActive: true,
+  items: [
+    { title: "Materias", url: "academico/materias" },
+    { title: "Cursos", url: "academico/cursos" },
+    { title: "Asignaciones", url: "academico/asignaciones" },
+  ],
+};
 
 export const navigationByRole = {
   owner: [
@@ -25,19 +36,11 @@ export const navigationByRole = {
         { title: "Invitaciones", url: "usuarios/invitar" },
       ],
     },
+    academicNavigation,
   ],
 
   admin: [
-    {
-      title: "Académico",
-      url: "#",
-      icon: <BookAIcon />,
-      isActive: true,
-      items: [
-        { title: "Cursos", url: "#" },
-        { title: "Materias", url: "#" },
-      ],
-    },
+    academicNavigation,
   ],
 
   teacher: [

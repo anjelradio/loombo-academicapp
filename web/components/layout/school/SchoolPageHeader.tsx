@@ -16,7 +16,8 @@ type SchoolPageHeaderProps = {
 export default function SchoolPageHeader({ section, page }: SchoolPageHeaderProps) {
   return (
     <header className="relative flex h-14 shrink-0 items-center gap-2 border-b border-[#2b5177]/65 bg-[#15385b] px-4 md:px-5">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(170,203,241,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(170,203,241,0.12)_1px,transparent_1px)] bg-[size:22px_22px]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(197,220,245,0.18)_1px,transparent_0)] bg-[size:3px_3px] opacity-40" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-44 bg-[radial-gradient(circle_at_right,rgba(126,176,238,0.24),transparent_70%)]" />
 
       <SidebarTrigger className="-ml-1 text-[#EAF2FF] hover:bg-white/10 hover:text-white" />
       <Separator orientation="vertical" className="mr-2 data-vertical:h-4 data-vertical:self-auto" />

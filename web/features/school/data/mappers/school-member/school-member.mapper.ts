@@ -1,5 +1,9 @@
 import type { SchoolMember } from "../../../domain/entities/school-member";
-import type { SchoolMemberResponseDto } from "../../schemas/school-member-response.schema";
+import type {
+  SchoolMemberResponseDto,
+  SchoolMemberResponseListDto,
+} from "../../schemas/school-member-response.schema";
+import type { SchoolMemberList } from "../../../domain/entities/school-member";
 
 export function toSchoolMemberEntity(dto: SchoolMemberResponseDto): SchoolMember {
   return {
@@ -12,6 +16,15 @@ export function toSchoolMemberEntity(dto: SchoolMemberResponseDto): SchoolMember
   };
 }
 
-export function toSchoolMemberEntityList(dtos: SchoolMemberResponseDto[]): SchoolMember[] {
-  return dtos.map(toSchoolMemberEntity);
+export function toSchoolMemberListEntity(
+  dto: SchoolMemberResponseListDto,
+): SchoolMemberList {
+  return {
+    users: dto.users.map(toSchoolMemberEntity),
+    page: dto.page,
+    perPage: dto.per_page,
+    totalPages: dto.total_pages,
+    hasPrev: dto.has_prev,
+    hasNext: dto.has_next,
+  };
 }

@@ -15,4 +15,14 @@ export const SchoolMemberSchema = z.object({
   createdDate: dateTimeString,
 });
 
+export const SchoolMembersListSchema = z.object({
+  users: z.array(SchoolMemberSchema),
+  page: z.number(),
+  perPage: z.number(),
+  totalPages: z.number(),
+  hasPrev: z.boolean(),
+  hasNext: z.boolean(),
+});
+
 export type SchoolMember = z.infer<typeof SchoolMemberSchema>;
+export type SchoolMemberList = z.infer<typeof SchoolMembersListSchema>;

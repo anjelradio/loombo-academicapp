@@ -1,47 +1,37 @@
-import SchoolUsersTableSkeleton from "@/features/school/presentation/components/users/SchoolUsersTableSkeleton";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import SchoolPageHeaderSkeleton from "@/components/layout/school/SchoolPageHeaderSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ContentGridSurface } from "@/features/shared/components/layout/ContentGridSurface";
 
 export default function AdministradoresLoading() {
   return (
     <>
-      <header className="flex h-14 shrink-0 items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1 text-foreground hover:bg-sidebar-accent/60 hover:text-foreground" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <Skeleton className="h-4 w-16 bg-[#29476A]" />
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>
-                <Skeleton className="h-4 w-28 bg-[#29476A]" />
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
+      <SchoolPageHeaderSkeleton />
+      <ContentGridSurface variant="north">
+        <div>
+          <Skeleton className="h-10 w-64 bg-[#d4e3f3]" />
+          <Skeleton className="mt-3 h-4 w-full max-w-2xl bg-[#dce9f6]" />
+        </div>
 
-      <div className="flex flex-1 flex-col gap-6 bg-gradient-to-b from-[#08172D] via-[#0A1D35] to-[#071427] p-4 md:p-6">
-        <section>
-          <Skeleton className="h-9 w-60 bg-[#2C4B70]" />
-          <Skeleton className="mt-3 h-4 w-full max-w-3xl bg-[#223E60]" />
+        <section className="grid gap-4 xl:grid-cols-[40%_60%]">
+          <div className="space-y-4">
+            <Skeleton className="h-40 w-full rounded-2xl bg-[#dbe8f5]" />
+            <Skeleton className="h-40 w-full rounded-2xl bg-[#dbe8f5]" />
+          </div>
+
+          <div className="rounded-2xl border border-[#d8e5f5] bg-white p-6">
+            <Skeleton className="h-28 w-full rounded-xl bg-[#edf4fb]" />
+            <div className="mt-4 space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 w-full rounded-xl bg-[#edf4fb]" />
+              ))}
+            </div>
+            <div className="mt-5 flex justify-center gap-2">
+              <Skeleton className="h-9 w-9 rounded-lg bg-[#dbe8f5]" />
+              <Skeleton className="h-9 w-9 rounded-lg bg-[#dbe8f5]" />
+            </div>
+          </div>
         </section>
-
-        <SchoolUsersTableSkeleton />
-      </div>
+      </ContentGridSurface>
     </>
   );
 }

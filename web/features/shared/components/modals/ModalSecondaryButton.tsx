@@ -10,7 +10,10 @@ export function ModalSecondaryButton({ className, children, ...props }: ModalSec
     <Button
       type="button"
       variant="outline"
-      className={cn("h-12 border-gray-300 text-gray-700 hover:bg-gray-50", className)}
+      className={cn(
+        "h-12 !border-gray-300 !bg-white !text-gray-700 hover:!bg-gray-100 hover:!text-gray-900",
+        className,
+      )}
       {...props}
     >
       {children}

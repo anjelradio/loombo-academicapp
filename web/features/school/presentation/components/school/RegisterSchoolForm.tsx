@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { SchoolCreateSchema, SchoolTypeEnum } from "@/features/school/data/schemas/school.schema";
+import type { Level } from "@/features/school/domain/entities/level";
 import { createSchool } from "@/features/school/presentation/actions/school/create-school-action";
 import { FormPhoneField } from "@/features/shared/components/forms/FormPhoneField";
 import { FormTextField } from "@/features/shared/components/forms/FormTextField";
@@ -12,18 +13,23 @@ import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
 import { appToast } from "@/features/shared/components/toast/toast";
 import { submitWithSchema } from "@/features/shared/infrastructure/forms/submit-with-schema";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SelectableChips } from "./SelectableChips";
 
-export default function RegisterSchoolForm() {
+type RegisterSchoolFormProps = {
+  levels: Level[];
+};
+
+const schoolTypeOptions: { value: "public" | "private" | "charter"; label: string }[] = [
+  { value: "public", label: "Publico" },
+  { value: "private", label: "Privado" },
+  { value: "charter", label: "De convenio" },
+];
+
+export default function RegisterSchoolForm({ levels }: RegisterSchoolFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [type, setType] = useState<"public" | "private" | "charter">("public");
+  const [selectedLevelIds, setSelectedLevelIds] = useState<string[]>([]);
 
   const handleSubmit = async (formData: FormData) => {
     await submitWithSchema({
@@ -32,11 +38,13 @@ export default function RegisterSchoolForm() {
         name: formData.get("schoolName"),
         type,
         phone: formData.get("phone"),
+        levelIds: selectedLevelIds,
       },
       action: createSchool,
       onSuccess: () => {
         formRef.current?.reset();
         setType("public");
+        setSelectedLevelIds([]);
         appToast.success("Escuela registrada correctamente");
         router.push("/");
       },
@@ -60,16 +68,22 @@ export default function RegisterSchoolForm() {
         <Label htmlFor="schoolType" className="text-base font-semibold text-gray-700">
           Tipo de colegio
         </Label>
-        <Select value={type} onValueChange={(value) => setType(SchoolTypeEnum.parse(value))}>
-          <SelectTrigger className="h-12 text-base border-gray-300 focus:border-[#1E3A5F] focus:ring-[#1E3A5F]">
-            <SelectValue placeholder="Selecciona el tipo de colegio" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="public">Publico</SelectItem>
-            <SelectItem value="private">Privado</SelectItem>
-            <SelectItem value="charter">De convenio</SelectItem>
-          </SelectContent>
-        </Select>
+        <SelectableChips
+          options={schoolTypeOptions}
+          selectedValues={[type]}
+          onChange={(values) => setType(SchoolTypeEnum.parse(values[0]))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-base font-semibold text-gray-700">Niveles que imparte</Label>
+        <p className="text-sm text-gray-500">Selecciona uno o mas niveles de ensenanza</p>
+        <SelectableChips
+          options={levels.map((level) => ({ value: level.id, label: level.name }))}
+          selectedValues={selectedLevelIds}
+          onChange={setSelectedLevelIds}
+          multiple
+        />
       </div>
 
       <div className="space-y-2">

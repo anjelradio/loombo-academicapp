@@ -33,7 +33,7 @@ export function FormTextField({
           id={id}
           name={name}
           className={cn(
-            "h-12 rounded-xl border-slate-300/90 bg-white px-3.5 text-[15px] shadow-sm transition-all duration-200 placeholder:text-slate-400 hover:border-[#1E3A5F]/40 hover:shadow-md focus-visible:border-[#1E3A5F] focus-visible:ring-4 focus-visible:ring-[#1E3A5F]/20",
+            "h-12 rounded-xl border-slate-300/90 bg-white px-3.5 text-[15px] text-slate-900 shadow-sm transition-all duration-200 placeholder:text-slate-400 hover:border-[#1E3A5F]/40 hover:shadow-md focus-visible:border-[#1E3A5F] focus-visible:ring-4 focus-visible:ring-[#1E3A5F]/20",
             className,
           )}
           {...inputProps}

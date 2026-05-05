@@ -1,4 +1,5 @@
 import RegisterSchoolForm from "@/features/school/presentation/components/school/RegisterSchoolForm";
+import { schoolRepository } from "@/features/school/data/repositories/school.repository";
 import {
   Card,
   CardContent,
@@ -7,7 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function RegisterSchoolPage() {
+export default async function RegisterSchoolPage() {
+  const levelsResponse = await schoolRepository.getLevels();
+  const levels = levelsResponse.ok ? levelsResponse.data : [];
+
   return (
     <div className="flex flex-1 items-center justify-center px-0 py-8 md:px-10 md:py-10 lg:px-14">
       <Card className="mx-4 w-[calc(100%-2rem)] max-w-3xl rounded-3xl border-none bg-white shadow-[0_28px_60px_-28px_rgba(10,31,61,0.55)] md:mx-0 md:w-full">
@@ -21,7 +25,7 @@ export default function RegisterSchoolPage() {
         </CardHeader>
 
         <CardContent className="px-6 pb-8 pt-6 sm:px-8 md:px-10">
-          <RegisterSchoolForm />
+          <RegisterSchoolForm levels={levels} />
         </CardContent>
       </Card>
     </div>

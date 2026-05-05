@@ -22,6 +22,7 @@ export const SchoolCreateSchema = z.object({
     .string()
     .trim()
     .refine((value) => /^\+?[0-9\s\-()]{8,20}$/.test(value), "El telefono es invalido"),
+  levelIds: z.array(z.uuid()).min(1, "Debes seleccionar al menos un nivel"),
 });
 
 export const SchoolJoinByCodeSchema = z.object({

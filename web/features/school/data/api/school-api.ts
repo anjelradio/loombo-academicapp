@@ -10,6 +10,9 @@ import {
 import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
 
 import {
+  LevelResponseListSchema,
+} from "../schemas/level-response.schema";
+import {
   SchoolCreateSchema,
   SchoolJoinByCodeSchema,
   SchoolResponseListSchema,
@@ -21,15 +24,19 @@ import {
   SchoolMemberResponseSchema,
 } from "../schemas/school-member.schema";
 import {
+  toLevelEntityList,
+} from "../mappers/level/level.mapper";
+import {
   toSchoolEntity,
   toSchoolEntityList,
 } from "../mappers/school/school.mapper";
 import {
   toSchoolMemberEntity,
-  toSchoolMemberEntityList,
+  toSchoolMemberListEntity,
 } from "../mappers/school-member/school-member.mapper";
 import type {
   SchoolActionResult,
+  LevelListResult,
   SchoolListResult,
   SchoolMemberListResult,
   SchoolMemberResult,
@@ -71,10 +78,32 @@ export const schoolApi = {
       url: baseUrl,
       method: "POST",
       token,
-      body: input.data,
+      body: {
+        name: input.data.name,
+        type: input.data.type,
+        phone: input.data.phone,
+        level_ids: input.data.levelIds,
+      },
       fallbackMessage: "No se pudo crear la escuela.",
       responseSchema: SchoolResponseSchema,
       mapData: toSchoolEntity,
+    });
+  },
+
+  async getLevels(): Promise<LevelListResult> {
+    const token = await getToken();
+    if (!token) {
+      return errorResult("No autorizado");
+    }
+
+    return apiRequestJson({
+      url: `${baseUrl}/levels`,
+      method: "GET",
+      token,
+      cache: "no-store",
+      fallbackMessage: "No se pudieron obtener los niveles.",
+      responseSchema: LevelResponseListSchema,
+      mapData: toLevelEntityList,
     });
   },
 
@@ -103,6 +132,9 @@ export const schoolApi = {
   async getUsersBySchool(
     schoolId: string,
     role?: "admin" | "teacher",
+    page = 1,
+    perPage = 8,
+    name?: string,
   ): Promise<SchoolMemberListResult> {
     const token = await getToken();
     if (!token) {
@@ -116,15 +148,24 @@ export const schoolApi = {
       }
     }
 
-    const query = role ? `?role=${role}` : "";
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("per_page", String(perPage));
+    if (role) {
+      params.set("role", role);
+    }
+    if (name && name.trim()) {
+      params.set("name", name.trim());
+    }
+
     return apiRequestJson({
-      url: `${baseUrl}/${schoolId}/users${query}`,
+      url: `${baseUrl}/${schoolId}/users?${params.toString()}`,
       method: "GET",
       token,
       cache: "no-store",
       fallbackMessage: "No se pudieron obtener los usuarios de la escuela.",
       responseSchema: SchoolMemberResponseListSchema,
-      mapData: toSchoolMemberEntityList,
+      mapData: toSchoolMemberListEntity,
     });
   },
 
