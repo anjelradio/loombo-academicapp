@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { SchoolCreateSchema, SchoolTypeEnum } from "@/features/school/data/schemas/school.schema";
+import { SchoolCreateSchema, SchoolTypeEnum } from "@/features/school/data/schemas";
 import type { Level } from "@/features/school/domain/entities/level";
 import { createSchool } from "@/features/school/presentation/actions/school/create-school-action";
 import { FormPhoneField } from "@/features/shared/components/forms/FormPhoneField";
@@ -41,12 +41,16 @@ export default function RegisterSchoolForm({ levels }: RegisterSchoolFormProps) 
         levelIds: selectedLevelIds,
       },
       action: createSchool,
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         formRef.current?.reset();
         setType("public");
         setSelectedLevelIds([]);
         appToast.success("Escuela registrada correctamente");
-        router.push("/");
+        if (!data?.id) {
+          router.push("/");
+          return;
+        }
+        router.push(`/inicio/planes?schoolId=${data.id}`);
       },
     });
   };

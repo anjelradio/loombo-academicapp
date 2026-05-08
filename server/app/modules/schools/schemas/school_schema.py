@@ -1,5 +1,5 @@
 import re
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
 from pydantic import StringConstraints, field_validator
@@ -14,6 +14,7 @@ class SchoolCreate(SQLModel):
     logo_image: Optional[str] = None
     type: SchoolType
     phone: Annotated[str, StringConstraints(min_length=8, max_length=20)]
+    level_ids: List[UUID]
 
     @field_validator("name")
     @classmethod
@@ -21,7 +22,9 @@ class SchoolCreate(SQLModel):
         normalized_name = " ".join(value.split())
 
         if len(normalized_name) < 5 or len(normalized_name) > 70:
-            raise ValueError("El nombre de la escuela debe tener entre 5 y 70 caracteres")
+            raise ValueError(
+                "El nombre de la escuela debe tener entre 5 y 70 caracteres"
+            )
 
         if not re.fullmatch(r"[A-Za-z0-9À-ÖØ-öø-ÿÑñ .'-]+", normalized_name):
             raise ValueError("El nombre contiene caracteres no permitidos")
@@ -37,6 +40,14 @@ class SchoolCreate(SQLModel):
             raise ValueError("El telefono debe tener entre 8 y 15 digitos")
 
         return normalized_phone
+
+    @field_validator("level_ids")
+    @classmethod
+    def validate_level_ids(cls, value: List[UUID]) -> List[UUID]:
+        unique_level_ids = list(dict.fromkeys(value))
+        if len(unique_level_ids) == 0:
+            raise ValueError("Debes seleccionar al menos un nivel")
+        return unique_level_ids
 
 
 class SchoolRead(SQLModel):
@@ -55,4 +66,20 @@ class SchoolWithRole(SQLModel):
     type: str
     phone: str
     role: SchoolRole
+    model_config = {"from_attributes": True}
+
+
+class PaginatedSchool(SQLModel):
+    schools: List[SchoolRead]
+    page: int
+    per_page: int
+    total: int
+    total_pages: int
+    has_prev: bool
+    has_next: bool
+
+
+class LevelRead(SQLModel):
+    id: UUID
+    name: str
     model_config = {"from_attributes": True}

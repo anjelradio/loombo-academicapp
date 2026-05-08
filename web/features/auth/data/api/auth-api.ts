@@ -4,24 +4,25 @@ import {
   apiRequestStatus,
 } from "@/features/shared/infrastructure/api/api-client";
 import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
-import type { ApiActionResult } from "@/features/shared/infrastructure/types/api-resource";
 import type {
-  AuthResult,
-} from "../types/auth.types";
+  ApiActionResult,
+  ApiResult,
+} from "@/features/shared/infrastructure/types/api-resource";
+import type { AuthSession } from "../../domain/entities/auth-session";
 import {
   LoginFormSchema,
-  LoginResponseSchema,
   RequestPasswordResetOtpFormSchema,
   RegisterFormSchema,
   VerifyPasswordResetOtpFormSchema,
-} from "../schemas/auth";
-import { toAuthSessionEntity } from "../mappers/auth/auth-session.mapper";
-import { toRegisterRequestDto } from "../mappers/auth/register.mapper";
+} from "../schemas/auth/request";
+import { LoginResponseSchema } from "../schemas/auth/response";
+import { toAuthSessionEntity } from "../mappers/auth/response/auth-session.mapper";
+import { toRegisterRequestDto } from "../mappers/auth/request/register.mapper";
 
 const baseUrl = `${env.API_URL}/auth`;
 
 export const authApi = {
-  async login(data: unknown): Promise<AuthResult> {
+  async login(data: unknown): Promise<ApiResult<AuthSession>> {
     const input = parseWithSchema(LoginFormSchema, data);
     if (!input.ok) {
       return input;
@@ -37,7 +38,7 @@ export const authApi = {
     });
   },
 
-  async register(data: unknown): Promise<AuthResult> {
+  async register(data: unknown): Promise<ApiResult<AuthSession>> {
     const input = parseWithSchema(RegisterFormSchema, data);
     if (!input.ok) {
       return input;

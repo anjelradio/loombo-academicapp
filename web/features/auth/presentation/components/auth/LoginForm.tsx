@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { LoginFormSchema } from "@/features/auth/data/schemas/auth";
+import { LoginFormSchema } from "@/features/auth/data/schemas/auth/request";
 import { FormTextField } from "@/features/shared/components/forms/FormTextField";
 import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
 import { useAppStore } from "@/features/shared/presentation/store/app-store";

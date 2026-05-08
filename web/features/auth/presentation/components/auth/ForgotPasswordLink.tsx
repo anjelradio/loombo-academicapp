@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   RequestPasswordResetOtpFormSchema,
   VerifyPasswordResetOtpFormSchema,
-} from "@/features/auth/data/schemas/auth";
+} from "@/features/auth/data/schemas/auth/request";
 import { requestPasswordResetOtp } from "@/features/auth/presentation/actions/auth/request-password-reset-otp-action";
 import { verifyPasswordResetOtp } from "@/features/auth/presentation/actions/auth/verify-password-reset-otp-action";
 import { FormTextField } from "@/features/shared/components/forms/FormTextField";

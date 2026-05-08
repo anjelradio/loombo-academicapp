@@ -1,28 +1,19 @@
-import { z } from "zod";
+import type { SchoolRole } from "./school";
 
-import { SchoolRoleEnum } from "./school";
+export type SchoolMember = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: SchoolRole;
+  createdDate: string;
+};
 
-const dateTimeString = z
-  .string()
-  .refine((value) => !Number.isNaN(Date.parse(value)), "Fecha invalida");
-
-export const SchoolMemberSchema = z.object({
-  id: z.uuid(),
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string(),
-  role: SchoolRoleEnum,
-  createdDate: dateTimeString,
-});
-
-export const SchoolMembersListSchema = z.object({
-  users: z.array(SchoolMemberSchema),
-  page: z.number(),
-  perPage: z.number(),
-  totalPages: z.number(),
-  hasPrev: z.boolean(),
-  hasNext: z.boolean(),
-});
-
-export type SchoolMember = z.infer<typeof SchoolMemberSchema>;
-export type SchoolMemberList = z.infer<typeof SchoolMembersListSchema>;
+export type SchoolMemberList = {
+  users: SchoolMember[];
+  page: number;
+  perPage: number;
+  totalPages: number;
+  hasPrev: boolean;
+  hasNext: boolean;
+};

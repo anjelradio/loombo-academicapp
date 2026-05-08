@@ -1,7 +1,7 @@
 "use server";
 
-import { schoolRepository } from "@/features/school/data/repositories/school.repository";
+import { schoolMembersRepository } from "@/features/school/data/repositories";
 
 export async function toggleUserRoleInSchool(schoolId: string, targetUserId: string) {
-  return schoolRepository.toggleUserRoleInSchool(schoolId, targetUserId);
+  return schoolMembersRepository.toggleUserRoleInSchool(schoolId, targetUserId);
 }

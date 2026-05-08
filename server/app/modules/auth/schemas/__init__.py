@@ -1,13 +1,24 @@
-from .login_schema import LoginRequest, LoginResponse
-from .password_reset_schema import (
+from .auth import (
+    LoginRequest,
+    LoginResponse,
+    RegisterRequest,
     RequestPasswordResetOtpRequest,
     RequestPasswordResetOtpResponse,
     VerifyPasswordResetOtpRequest,
     VerifyPasswordResetOtpResponse,
 )
-from .register_schema import RegisterRequest
+from .account import (
+    RequestEmailOtpResponse,
+    UpdateEmailRequest,
+    UpdatePasswordRequest,
+    UserProfileUpdate,
+    VerifyEmailOtpRequest,
+    VerifyEmailOtpResponse,
+)
+from .shared import UserRead
 
 __all__ = [
+    "UserRead",
     "RegisterRequest",
     "LoginRequest",
     "LoginResponse",
@@ -15,4 +26,10 @@ __all__ = [
     "RequestPasswordResetOtpResponse",
     "VerifyPasswordResetOtpRequest",
     "VerifyPasswordResetOtpResponse",
+    "UserProfileUpdate",
+    "RequestEmailOtpResponse",
+    "VerifyEmailOtpRequest",
+    "VerifyEmailOtpResponse",
+    "UpdateEmailRequest",
+    "UpdatePasswordRequest",
 ]

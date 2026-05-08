@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { UpdatePasswordFormSchema } from "@/features/auth/data/schemas/account";
+import { UpdatePasswordFormSchema } from "@/features/auth/data/schemas/account/request";
 import { updatePassword } from "@/features/auth/presentation/actions/account/update-password-action";
 import { FormTextField } from "@/features/shared/components/forms/FormTextField";
 import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";

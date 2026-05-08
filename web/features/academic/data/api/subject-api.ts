@@ -4,23 +4,26 @@ import {
   apiRequestJson,
   apiRequestStatus,
 } from "@/features/shared/infrastructure/api/api-client";
+import type {
+  ApiActionResult,
+  ApiResult,
+} from "@/features/shared/infrastructure/types/api-resource";
 import {
   errorResult,
 } from "@/features/shared/infrastructure/errors/api-error-result";
 import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
+import type { SubjectList } from "../../domain/entities/subject";
 
-import { toSubjectListEntity } from "../mappers/subjects/subject.mapper";
+import {
+  toSubjectCreateRequestDto,
+  toSubjectListEntity,
+  toSubjectUpdateRequestDto,
+} from "../mappers/subjects";
 import {
   SubjectListResponseSchema,
-} from "../schemas/subjects/subject-response.schema";
-import {
   SubjectCreateSchema,
   SubjectUpdateSchema,
-} from "../schemas/subjects/subject.schema";
-import type {
-  SubjectActionResult,
-  SubjectListResult,
-} from "../types/subject.types";
+} from "../schemas/subjects";
 
 const baseUrl = `${env.API_URL}/academic`;
 
@@ -30,7 +33,7 @@ export const subjectApi = {
     page = 1,
     perPage = 8,
     search?: string,
-  ): Promise<SubjectListResult> {
+  ): Promise<ApiResult<SubjectList>> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");
@@ -54,7 +57,7 @@ export const subjectApi = {
     });
   },
 
-  async createSubject(schoolId: string, data: unknown): Promise<SubjectActionResult> {
+  async createSubject(schoolId: string, data: unknown): Promise<ApiActionResult> {
     const input = parseWithSchema(SubjectCreateSchema, data);
     if (!input.ok) {
       return input;
@@ -69,7 +72,7 @@ export const subjectApi = {
       url: `${baseUrl}/schools/${schoolId}/subjects`,
       method: "POST",
       token,
-      body: input.data,
+      body: toSubjectCreateRequestDto(input.data),
       fallbackMessage: "No se pudo crear la materia.",
     });
   },
@@ -78,7 +81,7 @@ export const subjectApi = {
     schoolId: string,
     subjectId: string,
     data: unknown,
-  ): Promise<SubjectActionResult> {
+  ): Promise<ApiActionResult> {
     const input = parseWithSchema(SubjectUpdateSchema, data);
     if (!input.ok) {
       return input;
@@ -93,12 +96,12 @@ export const subjectApi = {
       url: `${baseUrl}/schools/${schoolId}/subjects/${subjectId}`,
       method: "PATCH",
       token,
-      body: input.data,
+      body: toSubjectUpdateRequestDto(input.data),
       fallbackMessage: "No se pudo actualizar la materia.",
     });
   },
 
-  async deleteSubject(schoolId: string, subjectId: string): Promise<SubjectActionResult> {
+  async deleteSubject(schoolId: string, subjectId: string): Promise<ApiActionResult> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");

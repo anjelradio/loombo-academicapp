@@ -4,26 +4,30 @@ import {
   apiRequestJson,
   apiRequestStatus,
 } from "@/features/shared/infrastructure/api/api-client";
+import type {
+  ApiActionResult,
+  ApiResult,
+} from "@/features/shared/infrastructure/types/api-resource";
 import { errorResult } from "@/features/shared/infrastructure/errors/api-error-result";
 import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with-schema";
+import type { Course, CourseFormOptions, CourseList } from "../../domain/entities/course";
 
 import {
+  toCourseCreateRequestDto,
+  toCourseEntity,
   toCourseFormOptionsEntity,
   toCourseListEntity,
-} from "../mappers/courses/course.mapper";
+  toCourseUpdateRequestDto,
+} from "../mappers/courses";
 import {
+  CourseResponseSchema,
   CourseFormOptionsResponseSchema,
   CourseListResponseSchema,
-} from "../schemas/courses/course-response.schema";
+} from "../schemas/courses";
 import {
   CourseCreateSchema,
   CourseUpdateSchema,
-} from "../schemas/courses/course.schema";
-import type {
-  CourseActionResult,
-  CourseFormOptionsResult,
-  CourseListResult,
-} from "../types/course.types";
+} from "../schemas/courses";
 
 const baseUrl = `${env.API_URL}/academic`;
 
@@ -33,7 +37,7 @@ export const courseApi = {
     page = 1,
     perPage = 8,
     search?: string,
-  ): Promise<CourseListResult> {
+  ): Promise<ApiResult<CourseList>> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");
@@ -57,7 +61,7 @@ export const courseApi = {
     });
   },
 
-  async getCourseFormOptions(schoolId: string): Promise<CourseFormOptionsResult> {
+  async getCourseFormOptions(schoolId: string): Promise<ApiResult<CourseFormOptions>> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");
@@ -74,7 +78,24 @@ export const courseApi = {
     });
   },
 
-  async createCourse(schoolId: string, data: unknown): Promise<CourseActionResult> {
+  async getCourseById(schoolId: string, courseId: string): Promise<ApiResult<Course>> {
+    const token = await getToken();
+    if (!token) {
+      return errorResult("No autorizado");
+    }
+
+    return apiRequestJson({
+      url: `${baseUrl}/schools/${schoolId}/courses/${courseId}`,
+      method: "GET",
+      token,
+      cache: "no-store",
+      fallbackMessage: "No se pudo obtener el curso.",
+      responseSchema: CourseResponseSchema,
+      mapData: toCourseEntity,
+    });
+  },
+
+  async createCourse(schoolId: string, data: unknown): Promise<ApiActionResult> {
     const input = parseWithSchema(CourseCreateSchema, data);
     if (!input.ok) {
       return input;
@@ -89,11 +110,7 @@ export const courseApi = {
       url: `${baseUrl}/schools/${schoolId}/courses`,
       method: "POST",
       token,
-      body: {
-        name: input.data.name,
-        school_level_id: input.data.schoolLevelId,
-        subject_ids: input.data.subjectIds,
-      },
+      body: toCourseCreateRequestDto(input.data),
       fallbackMessage: "No se pudo crear el curso.",
     });
   },
@@ -102,7 +119,7 @@ export const courseApi = {
     schoolId: string,
     courseId: string,
     data: unknown,
-  ): Promise<CourseActionResult> {
+  ): Promise<ApiActionResult> {
     const input = parseWithSchema(CourseUpdateSchema, data);
     if (!input.ok) {
       return input;
@@ -117,16 +134,12 @@ export const courseApi = {
       url: `${baseUrl}/schools/${schoolId}/courses/${courseId}`,
       method: "PUT",
       token,
-      body: {
-        name: input.data.name,
-        school_level_id: input.data.schoolLevelId,
-        subject_ids: input.data.subjectIds,
-      },
+      body: toCourseUpdateRequestDto(input.data),
       fallbackMessage: "No se pudo actualizar el curso.",
     });
   },
 
-  async deleteCourse(schoolId: string, courseId: string): Promise<CourseActionResult> {
+  async deleteCourse(schoolId: string, courseId: string): Promise<ApiActionResult> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");

@@ -1,6 +1,15 @@
 import { getToken } from "@/features/shared/infrastructure/auth/get-token";
 import { env } from "@/features/shared/infrastructure/config/env";
 import {
+  ApiActionResult,
+  ApiResult,
+} from "@/features/shared/infrastructure/types/api-resource";
+import type { AuthUser } from "../../domain/entities/auth-user";
+import type {
+  RequestEmailOtpInfo,
+  VerifyEmailOtpInfo,
+} from "../../domain/entities/email-otp";
+import {
   errorResult,
 } from "@/features/shared/infrastructure/errors/api-error-result";
 import {
@@ -12,33 +21,28 @@ import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with
 import {
   toRequestEmailOtpEntity,
   toVerifyEmailOtpEntity,
-} from "../mappers/account/email-otp.mapper";
-import { toAuthUserEntity } from "../mappers/auth/auth-user.mapper";
-import { toUpdateEmailRequestDto } from "../mappers/account/update-email.mapper";
-import { toUpdatePasswordRequestDto } from "../mappers/account/update-password.mapper";
-import { toUpdateUserProfileRequestDto } from "../mappers/account/update-profile.mapper";
+} from "../mappers/account/response/email-otp.mapper";
+import { toAuthUserEntity } from "../mappers/auth/response/auth-user.mapper";
+import { toUpdateEmailRequestDto } from "../mappers/account/request/update-email.mapper";
+import { toUpdatePasswordRequestDto } from "../mappers/account/request/update-password.mapper";
+import { toUpdateUserProfileRequestDto } from "../mappers/account/request/update-profile.mapper";
 import {
-  RequestEmailOtpResponseSchema,
   UpdateEmailFormSchema,
-  UpdateEmailResponseSchema,
   UpdatePasswordFormSchema,
   UpdateUserProfileFormSchema,
-  UpdateUserProfileResponseSchema,
   VerifyEmailOtpFormSchema,
+} from "../schemas/account/request";
+import {
+  RequestEmailOtpResponseSchema,
+  UpdateEmailResponseSchema,
+  UpdateUserProfileResponseSchema,
   VerifyEmailOtpResponseSchema,
-} from "../schemas/account";
-import type {
-  RequestEmailOtpResult,
-  UpdateEmailResult,
-  UpdatePasswordResult,
-  UpdateProfileInfoResult,
-  VerifyEmailOtpResult,
-} from "../types/account.types";
+} from "../schemas/account/response";
 
 const baseUrl = `${env.API_URL}/auth`;
 
 export const accountApi = {
-  async requestEmailOtp(): Promise<RequestEmailOtpResult> {
+  async requestEmailOtp(): Promise<ApiResult<RequestEmailOtpInfo>> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");
@@ -54,7 +58,7 @@ export const accountApi = {
     });
   },
 
-  async verifyEmailOtp(data: unknown): Promise<VerifyEmailOtpResult> {
+  async verifyEmailOtp(data: unknown): Promise<ApiResult<VerifyEmailOtpInfo>> {
     const input = parseWithSchema(VerifyEmailOtpFormSchema, data);
     if (!input.ok) {
       return input;
@@ -76,7 +80,7 @@ export const accountApi = {
     });
   },
 
-  async updateEmail(data: unknown): Promise<UpdateEmailResult> {
+  async updateEmail(data: unknown): Promise<ApiResult<AuthUser>> {
     const input = parseWithSchema(UpdateEmailFormSchema, data);
     if (!input.ok) {
       return input;
@@ -98,7 +102,7 @@ export const accountApi = {
     });
   },
 
-  async updatePassword(data: unknown): Promise<UpdatePasswordResult> {
+  async updatePassword(data: unknown): Promise<ApiActionResult> {
     const input = parseWithSchema(UpdatePasswordFormSchema, data);
     if (!input.ok) {
       return input;
@@ -118,7 +122,7 @@ export const accountApi = {
     });
   },
 
-  async updateProfileInfo(data: unknown): Promise<UpdateProfileInfoResult> {
+  async updateProfileInfo(data: unknown): Promise<ApiResult<AuthUser>> {
     const input = parseWithSchema(UpdateUserProfileFormSchema, data);
     if (!input.ok) {
       return input;

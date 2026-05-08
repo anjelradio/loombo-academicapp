@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
 import { joinSchoolByCode } from "@/features/school/presentation/actions/school/join-school-action";
-import { SchoolJoinByCodeSchema } from "@/features/school/data/schemas/school.schema";
+import { SchoolJoinByCodeSchema } from "@/features/school/data/schemas";
 import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
 import { ModalSecondaryButton } from "@/features/shared/components/modals/ModalSecondaryButton";
 import { appToast } from "@/features/shared/components/toast/toast";

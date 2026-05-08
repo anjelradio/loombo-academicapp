@@ -9,6 +9,10 @@ export const courseRepository = {
     return courseApi.getCourseFormOptions(schoolId);
   },
 
+  getCourseById(schoolId: string, courseId: string) {
+    return courseApi.getCourseById(schoolId, courseId);
+  },
+
   createCourse(schoolId: string, data: unknown) {
     return courseApi.createCourse(schoolId, data);
   },

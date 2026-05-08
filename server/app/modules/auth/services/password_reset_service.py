@@ -11,13 +11,13 @@ from app.core.redis import redis_client
 from app.core.security import hash_password
 from app.core.validators import validate_password_policy
 from app.dependencies.auth import DBSession
+from app.modules.auth.repositories import UserRepository
 from app.modules.auth.schemas import (
     RequestPasswordResetOtpRequest,
     RequestPasswordResetOtpResponse,
     VerifyPasswordResetOtpRequest,
     VerifyPasswordResetOtpResponse,
 )
-from app.modules.users.repository import UserRepository
 
 secure_random = SystemRandom()
 

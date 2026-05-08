@@ -1,4 +1,4 @@
-import { Invitation } from "@/features/school/domain/entities/invitation";
+import type { Invitation } from "@/features/school/domain/entities/invitation";
 import { formatBoliviaDateTime } from "@/features/shared/infrastructure/date-time/date-time";
 import InvitationCodeRowActions from "./InvitationCodeRowActions";
 

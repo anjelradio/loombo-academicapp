@@ -3,10 +3,10 @@ import { redirect } from "next/navigation";
 import SchoolPageHeader from "@/components/layout/school/SchoolPageHeader";
 import PageHeading from "@/components/shared/PageHeading";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { courseRepository } from "@/features/academic/data/repositories/course.repository";
-import CourseListItemCard from "@/features/academic/presentation/components/Course/CourseListItemCard";
-import RegisterCourseButton from "@/features/academic/presentation/components/Course/RegisterCourseButton";
-import CourseSearchForm from "@/features/academic/presentation/components/Course/CourseSearchForm";
+import { courseRepository } from "@/features/academic/data/repositories";
+import CourseListItemCard from "@/features/academic/presentation/components/course/CourseListItemCard";
+import RegisterCourseButton from "@/features/academic/presentation/components/course/RegisterCourseButton";
+import CourseSearchForm from "@/features/academic/presentation/components/course/CourseSearchForm";
 import { AccentCard } from "@/features/shared/components/cards/AccentCard";
 import { ContentGridSurface } from "@/features/shared/components/layout/ContentGridSurface";
 import AppPagination from "@/features/shared/components/navigation/AppPagination";
@@ -96,7 +96,6 @@ export default async function CursosPage({
                       key={course.id}
                       schoolId={schoolId}
                       course={course}
-                      formOptions={optionsResponse.data}
                     />
                   ))
                 ) : (

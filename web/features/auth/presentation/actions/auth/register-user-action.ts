@@ -1,10 +1,11 @@
 "use server";
 
-import { authRepository } from "../../../data/repositories/auth.repository";
-import type { AuthActionResult } from "../../../data/types/auth.types";
+import { authRepository } from "../../../data/repositories";
+import type { ApiResult } from "@/features/shared/infrastructure/types/api-resource";
+import type { AuthUser } from "@/features/auth/domain/entities/auth-user";
 import { cookies } from "next/headers";
 
-export async function registerUser(data: unknown): Promise<AuthActionResult> {
+export async function registerUser(data: unknown): Promise<ApiResult<AuthUser>> {
   const response = await authRepository.register(data);
 
   if (!response.ok) {

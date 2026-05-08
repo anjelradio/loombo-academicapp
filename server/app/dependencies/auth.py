@@ -7,8 +7,8 @@ from sqlmodel import Session
 
 from app.core.db import get_session
 from app.core.security import decode_token
-from app.modules.users.model import User
-from app.modules.users.repository import UserRepository
+from app.modules.auth.models import User
+from app.modules.auth.repositories import UserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 

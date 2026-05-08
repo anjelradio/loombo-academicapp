@@ -1,6 +1,11 @@
 import { getToken } from "@/features/shared/infrastructure/auth/get-token";
 import { env } from "@/features/shared/infrastructure/config/env";
 import {
+  ApiActionResult,
+  ApiResult,
+} from "@/features/shared/infrastructure/types/api-resource";
+import type { Invitation } from "../../domain/entities/invitation";
+import {
   errorResult,
 } from "@/features/shared/infrastructure/errors/api-error-result";
 import {
@@ -12,23 +17,16 @@ import { parseWithSchema } from "@/features/shared/infrastructure/api/parse-with
 import {
   InvitationCreateFormSchema,
   InvitationResponseListSchema,
-  InvitationResponseSchema,
-} from "../schemas/invitation.schema";
+} from "../schemas";
 import {
   toInvitationCreateRequestDto,
-  toInvitationEntity,
   toInvitationEntityList,
-} from "../mappers/invitation/invitation.mapper";
-import type {
-  InvitationActionResult,
-  InvitationListResult,
-  InvitationResult,
-} from "../types/invitation.types";
+} from "../mappers";
 
 const baseUrl = `${env.API_URL}/schools`;
 
 export const invitationApi = {
-  async getSchoolInvitations(schoolId: string): Promise<InvitationListResult> {
+  async getSchoolInvitations(schoolId: string): Promise<ApiResult<Invitation[]>> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");
@@ -45,7 +43,7 @@ export const invitationApi = {
     });
   },
 
-  async createInvitation(schoolId: string, data: unknown): Promise<InvitationResult> {
+  async createInvitation(schoolId: string, data: unknown): Promise<ApiActionResult> {
     const input = parseWithSchema(InvitationCreateFormSchema, data);
     if (!input.ok) {
       return input;
@@ -56,18 +54,16 @@ export const invitationApi = {
       return errorResult("No autorizado");
     }
 
-    return apiRequestJson({
+    return apiRequestStatus({
       url: `${baseUrl}/${schoolId}/invite`,
       method: "POST",
       token,
       body: toInvitationCreateRequestDto(input.data),
       fallbackMessage: "No se pudo crear la invitacion.",
-      responseSchema: InvitationResponseSchema,
-      mapData: toInvitationEntity,
     });
   },
 
-  async deleteInvitation(schoolId: string, invitationId: string): Promise<InvitationActionResult> {
+  async deleteInvitation(schoolId: string, invitationId: string): Promise<ApiActionResult> {
     const token = await getToken();
     if (!token) {
       return errorResult("No autorizado");

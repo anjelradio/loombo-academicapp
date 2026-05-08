@@ -1,6 +1,6 @@
 import PageHeading from "@/components/shared/PageHeading";
 import SchoolPageHeader from "@/components/layout/school/SchoolPageHeader";
-import { schoolRepository } from "@/features/school/data/repositories/school.repository";
+import { schoolMembersRepository } from "@/features/school/data/repositories";
 import { ContentGridSurface } from "@/features/shared/components/layout/ContentGridSurface";
 import { AccentCard } from "@/features/shared/components/cards/AccentCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,7 +18,7 @@ export default async function BuscarProfesoresPage({
   const filters = await searchParams;
   const query = (filters.name ?? "").trim();
 
-  const response = await schoolRepository.getUsersBySchool(
+  const response = await schoolMembersRepository.getUsersBySchool(
     schoolId,
     "teacher",
     1,

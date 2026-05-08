@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 
 import { updateProfileInfo } from "@/features/auth/presentation/actions/account/update-profile-info-action";
-import { UpdateUserProfileFormSchema } from "@/features/auth/data/schemas/account";
+import { UpdateUserProfileFormSchema } from "@/features/auth/data/schemas/account/request";
 import { useAppStore } from "@/features/shared/presentation/store/app-store";
 import { appToast } from "@/features/shared/components/toast/toast";
 import { FormTextField } from "@/features/shared/components/forms/FormTextField";

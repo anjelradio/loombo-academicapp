@@ -10,6 +10,8 @@ const academicNavigation = {
     { title: "Materias", url: "academico/materias" },
     { title: "Cursos", url: "academico/cursos" },
     { title: "Asignaciones", url: "academico/asignaciones" },
+    { title: "Periodos y ponderacion", url: "academico/periodos-ponderacion" },
+    { title: "Promedios", url: "academico/promedios" },
   ],
 };
 
@@ -45,11 +47,15 @@ export const navigationByRole = {
 
   teacher: [
     {
-      title: "Mis Clases",
+      title: "Docente",
       url: "#",
       icon: <School />,
       isActive: true,
-      items: [{ title: "Cursos", url: "#" }],
+      items: [
+        { title: "Evaluaciones", url: "docente/evaluaciones" },
+        { title: "Asistencias", url: "docente/asistencias" },
+        { title: "Promedios", url: "docente/promedios" },
+      ],
     },
   ],
 };

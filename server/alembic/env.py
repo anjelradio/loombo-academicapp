@@ -6,8 +6,31 @@ from sqlalchemy import create_engine, engine_from_config, pool
 from sqlmodel import SQLModel
 
 from alembic import context
-from app.modules.schools.models import School, SchoolInvite, SchoolUser
-from app.modules.users.model import User
+from app.modules.academic.models import (
+    Assignment,
+    Course,
+    CourseSubject,
+    EvaluationWeight,
+    Subject,
+    Term,
+)
+from app.modules.attendance.models import AttendanceRecord, AttendanceSession, AttendanceStatus
+from app.modules.auth.models import User
+from app.modules.evaluations.models import (
+    Evaluation,
+    EvaluationGrade,
+    EvaluationType,
+    TermSubjectAverage,
+)
+from app.modules.subscriptions.models import Plan, SchoolSubscription, SubscriptionPayment
+from app.modules.schools.models import (
+    Level,
+    School,
+    SchoolInvite,
+    SchoolLevel,
+    SchoolUser,
+)
+from app.modules.students.models import CourseStudent, Student
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -26,18 +49,17 @@ if config.config_file_name is not None:
 
 load_dotenv()
 # DEV
-# DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # PROD
-raw_url = os.environ["DATABASE_URL"]
-url = raw_url
-if url.startswith("postgres//"):
-    url = "postgresql+psycopg://" + url[len("postgres://") :]
-elif url.startswith("postgresql://") and "+psycopg" not in url:
-    url = "postgresql+psycopg://" + url[len("postgresql://") :]
-
-DATABASE_URL = url
+# raw_url = os.environ["DATABASE_URL"]
+# url = raw_url
+# if url.startswith("postgres//"):
+#     url = "postgresql+psycopg://" + url[len("postgres://") :]
+# elif url.startswith("postgresql://") and "+psycopg" not in url:
+#     url = "postgresql+psycopg://" + url[len("postgresql://") :]
+# DATABASE_URL = url
 
 target_metadata = SQLModel.metadata
 

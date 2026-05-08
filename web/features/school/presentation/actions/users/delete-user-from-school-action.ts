@@ -1,7 +1,7 @@
 "use server";
 
-import { schoolRepository } from "@/features/school/data/repositories/school.repository";
+import { schoolMembersRepository } from "@/features/school/data/repositories";
 
 export async function deleteUserFromSchool(schoolId: string, targetUserId: string) {
-  return schoolRepository.deleteUserFromSchool(schoolId, targetUserId);
+  return schoolMembersRepository.deleteUserFromSchool(schoolId, targetUserId);
 }

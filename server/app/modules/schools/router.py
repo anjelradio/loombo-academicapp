@@ -1,9 +1,12 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Query, Response, status
 
 from app.dependencies.auth import CurrentUser, DBSession
 from app.modules.schools.schemas import (
+    LevelRead,
+    PaginatedSchool,
+    PaginatedSchoolMember,
     SchoolCreate,
     SchoolInviteCreate,
     SchoolInviteRead,
@@ -18,9 +21,13 @@ from app.modules.schools.services import SchoolInviteService, SchoolService
 router = APIRouter(prefix="/schools", tags=["Escuela"])
 
 
-@router.get("/", response_model=list[SchoolRead])
-def list_schools(db: DBSession):
-    return SchoolService(db).list()
+@router.get("/", response_model=PaginatedSchool)
+def list_schools(
+    db: DBSession,
+    per_page: int = Query(8, ge=1, le=50, description="Numero de resultados"),
+    page: int = Query(1, ge=1, description="Numero de pagina"),
+):
+    return SchoolService(db).list(per_page, page)
 
 
 @router.post("/", response_model=SchoolRead)
@@ -28,22 +35,34 @@ def create_school(db: DBSession, payload: SchoolCreate, user: CurrentUser):
     return SchoolService(db).create(payload, user.id)
 
 
+@router.get("/levels", response_model=list[LevelRead])
+def list_levels(db: DBSession):
+    return SchoolService(db).list_levels()
+
+
 @router.get("/by_user", response_model=list[SchoolWithRole])
 def list_school_by_user(db: DBSession, user: CurrentUser):
     return SchoolService(db).list_by_user(user.id)
 
 
-@router.get("/{school_id}/users", response_model=list[SchoolMemberRead])
+@router.get("/{school_id}/users", response_model=PaginatedSchoolMember)
 def list_users_by_school(
-    school_id: UUID,
     db: DBSession,
+    school_id: UUID,
     user: CurrentUser,
+    per_page: int = Query(8, ge=1, le=50, description="Numero de resultados"),
+    page: int = Query(1, ge=1, description="Numero de pagina"),
     role: SchoolUsersFilterRole | None = None,
+    name: str | None = Query(None, min_length=1, description="Filtro por nombre"),
 ):
-    return SchoolService(db).list_users_by_school(school_id, user.id, role)
+    return SchoolService(db).list_users_by_school(
+        school_id, user.id, per_page, page, role, name
+    )
 
 
-@router.delete("/{school_id}/users/{target_user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{school_id}/users/{target_user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 def delete_user_from_school(
     school_id: UUID, target_user_id: UUID, db: DBSession, user: CurrentUser
 ):
@@ -51,11 +70,15 @@ def delete_user_from_school(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.patch("/{school_id}/users/{target_user_id}/role", response_model=SchoolMemberRead)
+@router.patch(
+    "/{school_id}/users/{target_user_id}/role", response_model=SchoolMemberRead
+)
 def toggle_user_role_in_school(
     school_id: UUID, target_user_id: UUID, db: DBSession, user: CurrentUser
 ):
-    return SchoolService(db).toggle_user_role_in_school(school_id, user.id, target_user_id)
+    return SchoolService(db).toggle_user_role_in_school(
+        school_id, user.id, target_user_id
+    )
 
 
 @router.post("/{school_id}/invite", response_model=SchoolInviteRead)
@@ -70,7 +93,9 @@ def list_school_invites(school_id: UUID, db: DBSession, user: CurrentUser):
     return SchoolInviteService(db).list_by_school(school_id, user.id)
 
 
-@router.delete("/{school_id}/invite/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{school_id}/invite/{invite_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 def delete_school_invite(
     school_id: UUID, invite_id: UUID, db: DBSession, user: CurrentUser
 ):

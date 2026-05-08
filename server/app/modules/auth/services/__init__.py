@@ -1,5 +1,9 @@
-from .login_service import LoginService
+from .account_service import AccountService
+from .auth_service import AuthService
 from .password_reset_service import PasswordResetService
-from .register_service import RegisterService
 
-__all__ = ["RegisterService", "LoginService", "PasswordResetService"]
+__all__ = [
+    "AuthService",
+    "PasswordResetService",
+    "AccountService",
+]

@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   UpdateEmailFormSchema,
   VerifyEmailOtpFormSchema,
-} from "@/features/auth/data/schemas/account";
+} from "@/features/auth/data/schemas/account/request";
 import { requestEmailOtp } from "@/features/auth/presentation/actions/account/request-email-otp-action";
 import { updateEmail } from "@/features/auth/presentation/actions/account/update-email-action";
 import { verifyEmailOtp } from "@/features/auth/presentation/actions/account/verify-email-otp-action";

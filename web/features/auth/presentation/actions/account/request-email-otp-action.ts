@@ -1,8 +1,9 @@
 "use server";
 
-import { accountRepository } from "../../../data/repositories/account.repository";
-import type { RequestEmailOtpResult } from "../../../data/types/account.types";
+import { accountRepository } from "../../../data/repositories";
+import type { ApiResult } from "@/features/shared/infrastructure/types/api-resource";
+import type { RequestEmailOtpInfo } from "@/features/auth/domain/entities/email-otp";
 
-export async function requestEmailOtp(): Promise<RequestEmailOtpResult> {
+export async function requestEmailOtp(): Promise<ApiResult<RequestEmailOtpInfo>> {
   return accountRepository.requestEmailOtp();
 }

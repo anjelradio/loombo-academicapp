@@ -30,7 +30,7 @@ import {
 
 export function NavUser() {
   const router = useRouter();
-  const { user, clearUser } = useAppStore();
+  const { user, clearUser, selectedSchool } = useAppStore();
   const { isMobile } = useSidebar();
 
   const handleGoToProfile = () => {
@@ -41,6 +41,22 @@ export function NavUser() {
     clearUser();
     await logout();
     router.push("/");
+  };
+
+  const handleUpgradePlan = () => {
+    if (!selectedSchool?.id) {
+      router.push("/inicio");
+      return;
+    }
+    router.push(`/inicio/planes?schoolId=${selectedSchool.id}`);
+  };
+
+  const handleCurrentPlan = () => {
+    if (!selectedSchool?.id) {
+      router.push("/inicio");
+      return;
+    }
+    router.push(`/${selectedSchool.id}/suscripciones/actual`);
   };
 
   return (
@@ -91,9 +107,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
+              <DropdownMenuItem
+                onClick={handleUpgradePlan}
+                className="focus:bg-accent/70 focus:text-accent-foreground"
+              >
                 <SparklesIcon />
-                Soon
+                Mejorar plan
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -105,9 +124,12 @@ export function NavUser() {
                 <BadgeCheckIcon />
                 Cuenta
               </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
+              <DropdownMenuItem
+                onClick={handleCurrentPlan}
+                className="focus:bg-accent/70 focus:text-accent-foreground"
+              >
                 <CreditCardIcon />
-                Soon
+                Plan actual
               </DropdownMenuItem>
               <DropdownMenuItem className="focus:bg-accent/70 focus:text-accent-foreground">
                 <BellIcon />

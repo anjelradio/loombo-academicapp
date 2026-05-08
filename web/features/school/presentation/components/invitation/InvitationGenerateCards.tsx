@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import {
   InvitationCreateFormSchema,
   InvitationRoleEnum,
-} from "@/features/school/data/schemas/invitation.schema";
+} from "@/features/school/data/schemas";
 import { SubmitButton } from "@/features/shared/components/forms/SubmitButton";
 import { ModalSecondaryButton } from "@/features/shared/components/modals/ModalSecondaryButton";
 import { appToast } from "@/features/shared/components/toast/toast";

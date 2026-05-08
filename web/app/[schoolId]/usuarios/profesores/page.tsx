@@ -1,6 +1,6 @@
 import PageHeading from "@/components/shared/PageHeading";
 import SchoolPageHeader from "@/components/layout/school/SchoolPageHeader";
-import { schoolRepository } from "@/features/school/data/repositories/school.repository";
+import { schoolMembersRepository } from "@/features/school/data/repositories";
 import { ContentGridSurface } from "@/features/shared/components/layout/ContentGridSurface";
 import { AccentCard } from "@/features/shared/components/cards/AccentCard";
 import IndicatorsSummaryCard from "@/features/shared/components/cards/IndicatorsSummaryCard";
@@ -25,7 +25,7 @@ export default async function ProfesoresPage({
   if (safePage < 1) redirect(`/${schoolId}/usuarios/profesores`);
 
   const pageSize = 8;
-  const response = await schoolRepository.getUsersBySchool(
+  const response = await schoolMembersRepository.getUsersBySchool(
     schoolId,
     "teacher",
     safePage,

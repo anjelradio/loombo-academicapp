@@ -1,15 +1,11 @@
-import { z } from "zod";
+export type SchoolRole = "owner" | "teacher" | "admin";
+export type SchoolType = "public" | "private" | "charter";
 
-export const SchoolRoleEnum = z.enum(["owner", "teacher", "admin"]);
-export const SchoolTypeEnum = z.enum(["public", "private", "charter"]);
-
-export const SchoolSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  logoImage: z.string().nullable(),
-  type: SchoolTypeEnum,
-  phone: z.string(),
-  role: SchoolRoleEnum.optional(),
-});
-
-export type School = z.infer<typeof SchoolSchema>;
+export type School = {
+  id: string;
+  name: string;
+  logoImage: string | null;
+  type: SchoolType;
+  phone: string;
+  role?: SchoolRole;
+};
